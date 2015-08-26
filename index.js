@@ -9,9 +9,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 
 //Spotify Player
-var lame = require('lame');
+var Lame = require('lame');
 var Speaker = require('speaker');
 var Spotify = require('spotify-web');
+var Throttle = require('throttle');
 
 //var uri = "spotify:track:4uB28m7RAflobYpnLMb6A2"
 //var uri = "spotify:track:5XhMeCYrRhQjL4sUoOmUCE"
@@ -27,7 +28,13 @@ SpotifyPlayer = (function(){
   var that = this;
   this.initialized = false;
   this.spotifyStream = null;
-  this.speakerStream = null;
+  this.throttledStream = null;
+
+  this.BIT_RATE = 160000; // Spotify web standard bit rate
+  // Lame decoder & speaker objects
+  this.lame = new Lame.Decoder();
+  // pipe() returns destination stream
+  this.speaker = this.lame.pipe(new Speaker());
 
   this.spotify = Spotify.login(username, password, function (err, spotify) {
     if (err) throw err;
@@ -35,13 +42,19 @@ SpotifyPlayer = (function(){
     console.log("Spotify Initialized");
   });
 
-  this.stopPlayback = function(){
-    if (this.spotifyStream) {
-      spotifyStream.abort();
-      //spotifyStream.pause();
-    }
-    
-    //if (this.speakerStream) { speakerStream.close() }
+  this.pause = function(){
+    if (this.throttledStream != null) { this.throttledStream.pause() }
+  };
+
+  this.resume = function(){
+    if (this.throttledStream != null) { this.throttledStream.resume() }
+  };
+
+  this.stop = function(){
+    if (this.spotifyStream != null) { this.spotifyStream.abort(); }
+    if (this.throttledStream != null) { this.throttledStream.pause() }
+    this.spotifyStream = null;
+    this.throttledStream = null;
   };
 
   this.playTrackUri = function(uri){
@@ -50,9 +63,15 @@ SpotifyPlayer = (function(){
       if (err) throw err;
       console.log('Playing: %s - %s', track.artist[0].name, track.name);
       // play() returns a readable stream of MP3 audio data
-      that.stopPlayback();
+      that.stop();
       that.spotifyStream = track.play();
-      that.speakerStream = that.spotifyStream.pipe(new lame.Decoder()).pipe(new Speaker());
+      that.throttledStream = that.spotifyStream.pipe(new Throttle(that.BIT_RATE/8)); // convert to bytes per second
+      // manually write data to the decoder stream,
+      // which is a writeable stream
+      that.throttledStream.on('data', function (chunk) {
+        that.lame.write(chunk);
+      });
+
       //.on('finish', function () {
       //  spotify.disconnect();
       //});
@@ -67,6 +86,16 @@ SpotifyPlayer = (function(){
 app.post('/play/', function(req, res){
   var uri = req.body.uri;
   SpotifyPlayer.playTrackUri(uri);
+  res.send("OK");
+});
+
+app.post('/pause/', function(req, res){  
+  SpotifyPlayer.pause();
+  res.send("OK");
+});
+
+app.post('/resume/', function(req, res){  
+  SpotifyPlayer.resume();
   res.send("OK");
 });
 

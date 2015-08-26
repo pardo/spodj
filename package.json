@@ -19,6 +19,7 @@
     "lame": "~1.2.2",
     "speaker": "~0.2.5",
     "express": "~4.13.3",
-    "body-parser": "~1.13.3"
+    "body-parser": "~1.13.3",
+    "throttle": "~1.0.3"
   }
 }
