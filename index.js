@@ -51,8 +51,15 @@ SpotifyPlayer = (function(){
   };
 
   this.stop = function(){
-    if (this.spotifyStream != null) { this.spotifyStream.abort(); }
-    if (this.throttledStream != null) { this.throttledStream.pause() }
+    if (this.spotifyStream != null) {
+      this.spotifyStream.abort();
+      this.spotifyStream.unpipe();
+    }
+    if (this.throttledStream != null) {
+      this.throttledStream.pause();
+      this.throttledStream.removeAllListeners("data");
+      this.throttledStream.unpipe();
+    }
     this.spotifyStream = null;
     this.throttledStream = null;
   };
@@ -93,6 +100,12 @@ app.post('/pause/', function(req, res){
   SpotifyPlayer.pause();
   res.send("OK");
 });
+
+app.post('/stop/', function(req, res){
+  SpotifyPlayer.stop();
+  res.send("OK");
+});
+
 
 app.post('/resume/', function(req, res){  
   SpotifyPlayer.resume();
