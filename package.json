@@ -1,0 +1,24 @@
+{
+  "name": "spodj",
+  "version": "0.0.0",
+  "description": "Spotify multiple playlist",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pardo/spodj.git"
+  },
+  "author": "Pardo",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "gitHead": "18565b00ed648bac7dc27f38e5e294ba75b62fde",
+  "dependencies": {
+    "spotify-web": "~1.3.0",
+    "lame": "~1.2.2",
+    "speaker": "~0.2.5",
+    "express": "~4.13.3",
+    "body-parser": "~1.13.3"
+  }
+}
