@@ -38,7 +38,7 @@ SpotifyPlayer = (function(){
 
   this.spotify = Spotify.login(username, password, function (err, spotify) {
     if (err) throw err;
-    this.initialized = true;
+    that.initialized = true;
     console.log("Spotify Initialized");
   });
 
@@ -86,8 +86,55 @@ SpotifyPlayer = (function(){
     });
   };
 
+
   return this;
 })();
+
+TracksQueue = (function(){
+    var that = this;
+    this.tracksUris = [];
+    //trackUris index
+    this.currentTrack = 0;
+
+    this.shuffle = function(){};
+
+    this.pushTrackUriAfterCurrent = function(uri){
+        this.tracksUris.splice(this.currentTrack+1, 0, uri);
+    };
+
+    this.pushTrackUri = function(uri){
+        this.tracksUris.push(uri);
+    };
+
+    this.removeTrackUri = function(uri){
+        var index = this.tracksUris.indexOf(uri);
+        if (index > -1) {
+            this.tracksUris.splice(index, 1);
+        }
+    };
+
+    this.getQueue = function(){
+        return this.tracksUris;
+    };
+
+    this.next = function(){
+        return this.tracksUris[this.currentTrack % this.tracksUris.length]
+    };
+
+    return this
+})();
+
+app.post('/queue/', function(req, res){
+  var uri = req.body.uri;
+  TracksQueue.pushTrackUri(uri);
+  res.send("OK");
+});
+
+app.post('/unqueue/', function(req, res){
+  var uri = req.body.uri;
+  TracksQueue.removeTrackUri(uri);
+  res.send("OK");
+});
 
 
 app.post('/play/', function(req, res){
@@ -105,7 +152,6 @@ app.post('/stop/', function(req, res){
   SpotifyPlayer.stop();
   res.send("OK");
 });
-
 
 app.post('/resume/', function(req, res){  
   SpotifyPlayer.resume();
