@@ -55,6 +55,12 @@ SpotifyPlayer = (function(){
     if (!this.isPlaying() && this.initialized) {
       var uri = this.tracksQueue.next();
       if (uri != null) {
+        io.email("player.start.uri", {
+            uri: uri,
+            queueIndex: TracksQueue.queueIndex,
+            timePlayed: 0
+        });
+
         this.playTrackUri(uri);
       }
     }
@@ -69,11 +75,13 @@ SpotifyPlayer = (function(){
   this.pause = function(){
     if (this.throttledStream != null) { this.throttledStream.pause() }
     that.lastTime = null;
+    io.emit("player.pause");
   };
 
   this.resume = function(){
     if (this.throttledStream != null) { this.throttledStream.resume() }
     that.lastTime = null;
+    io.emit("player.resume");
   };
 
   this.skip = function(abort){
@@ -103,7 +111,14 @@ SpotifyPlayer = (function(){
     console.log("Querying %s", uri);
     this.currentTrack = uri;
     this.spotify.get(uri, function (err, track) {
-      if (err) throw err;            
+      if (err) throw err;
+
+      io.emit("player.play", {
+        uri: uri,
+        queueIndex: TracksQueue.queueIndex,
+        timePlayed: 0
+      });
+
       console.log('Playing: %s - %s', track.artist[0].name, track.name);
       
       if (this.spotifyStream != null) {
@@ -127,7 +142,7 @@ SpotifyPlayer = (function(){
         setTimeout(function(){
           that.skip();  
         }, 100);      
-      });;
+      });
     });
   };
 
@@ -148,12 +163,14 @@ TracksQueue = (function(){
 
     this.pushTrackUri = function(uri){
         this.tracksUris.push(uri);
+        io.emit("queue.added", { uri: uri });
     };
 
     this.removeTrackUri = function(uri){
         var index = this.tracksUris.indexOf(uri);
         if (index > -1) {
             this.tracksUris.splice(index, 1);
+            io.emit("queue.removed", { uri: uri });
         }
     };
 

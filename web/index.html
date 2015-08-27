@@ -4,12 +4,6 @@
 	<script type="text/javascript" src="/js/jquery-2.1.4.min.js"></script>
 	<script type="text/javascript" src="/js/nunjucks.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
-	<script>
-	  	var socket = io.connect(window.location.origin);
-	  	socket.on('test', function (data) {
-		    alert("TEST", data);		    
-	  	});
-	</script>
 	<script type="text/javascript" src="/js/main.js"></script>
 </head>
 <body>
@@ -21,7 +15,15 @@
 		<div class="search-results"></div>
 
 		<h3>Player Queue</h3>
-		<a href="#" data-resfresh-queue>Refresh</a>
+        <div class="player">
+		    <a href="#" data-player-pause>Pause</a>
+		    <a href="#" data-player-resume>Resume</a>
+		    <a href="#" data-player-next>Next</a>
+		    <a href="#" data-resfresh-queue>Refresh</a>
+
+            <div class="current"></div>
+
+        </div>
 		<div class="player-queue"></div>
 
 	</div>

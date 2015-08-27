@@ -24,7 +24,7 @@ $(function(){
 			return $.ajax({ 
 				url: "https://api.spotify.com/v1/albums/"+id+"/tracks",
 				data: {
-					"ids": ids.join(","),					
+					"ids": ids.join(",")
 				}
 			});			
 		};
@@ -33,7 +33,7 @@ $(function(){
 			return $.ajax({ 
 				url: "https://api.spotify.com/v1/tracks",
 				data: {
-					"ids": ids.join(","),					
+					"ids": ids.join(",")
 				}
 			});			
 		};
@@ -57,7 +57,7 @@ $(function(){
 					{
 						albums: response.albums,
 						artists: response.artists,
-						tracks: response.tracks,
+						tracks: response.tracks
 					},
 					function(err, res) {
 						if (err) throw err;
@@ -71,7 +71,7 @@ $(function(){
 			this.getAlbum(this.uriToId(uri)).done(function(album){				
 				for (var i = 0; i < album.tracks.items.length; i++) {
 					that.queueTrackUri(album.tracks.items[i].uri);
-				};
+				}
 			});
 		};
 
@@ -130,8 +130,28 @@ $(function(){
 				that.search(that.$input.val());
 			}
 		});
-		
-		
+
+        $("[data-player-pause]").click(function(e){
+            e.preventDefault();
+            $.ajax({ url: "/pause/", type: "post" });
+        });
+        $("[data-player-resume]").click(function(e){
+            e.preventDefault();
+            $.ajax({ url: "/resume/", type: "post" });
+        });
+        $("[data-player-next]").click(function(e){
+            e.preventDefault();
+            $.ajax({ url: "/next/", type: "post" });
+        });
+
+	  	var socket = io.connect(window.location.origin);
+	  	socket.on('player.play', function (data) {
+		    AppWidget.getTracks(AppWidget.uriToId(data.uri)).done(function(tracks){
+                var track = tracks.tracks[0];
+                $(".current").html(track.name +" - "+ track.album.name +" - "+ track.artists[0].name);
+            })
+	  	});
+
 
 		return this;
 	
