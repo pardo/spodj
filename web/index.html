@@ -3,6 +3,13 @@
 	<title>SpoDJ</title>
 	<script type="text/javascript" src="/js/jquery-2.1.4.min.js"></script>
 	<script type="text/javascript" src="/js/nunjucks.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+	  	var socket = io.connect(window.location.origin);
+	  	socket.on('test', function (data) {
+		    alert("TEST", data);		    
+	  	});
+	</script>
 	<script type="text/javascript" src="/js/main.js"></script>
 </head>
 <body>

@@ -1,9 +1,9 @@
-//Api 
+var http = require('http');
 var express = require('express');
 var bodyParser = require('body-parser');
 
 var app = express();
-
+app.set('port', 9000);
 app.use(express.static('web'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
@@ -14,8 +14,6 @@ var Speaker = require('speaker');
 var Spotify = require('spotify-web');
 var Throttle = require('throttle');
 
-//var uri = "spotify:track:4uB28m7RAflobYpnLMb6A2"
-//var uri = "spotify:track:5XhMeCYrRhQjL4sUoOmUCE"
 
 // Spotify credentials...
 var login = require('./login.js');
@@ -40,11 +38,14 @@ SpotifyPlayer = (function(){
   // pipe() returns destination stream
   this.speaker = this.lame.pipe(new Speaker());
 
-  this.spotify = Spotify.login(username, password, function (err, spotify) {
-    if (err) throw err;
-    that.initialized = true;
-    console.log("Spotify Initialized");
-  });
+  this.login = function(){
+    this.spotify = Spotify.login(username, password, function (err, spotify) {
+      if (err) throw err;
+      that.initialized = true;
+      console.log("Spotify Initialized");
+    });
+  };
+  
 
   this.isPlaying = function() {
     return this.currentTrack != null;
@@ -164,8 +165,9 @@ TracksQueue = (function(){
         this.queueIndex = (this.queueIndex+1) % this.tracksUris.length;
         if (isNaN(this.queueIndex)) {
           this.queueIndex = 0;
-        }
-        console.log("Current Track %s", this.queueIndex);
+        } else {
+          console.log("Current Track %s", this.queueIndex);  
+        }        
         return this.tracksUris[this.queueIndex];
     };
 
@@ -173,6 +175,7 @@ TracksQueue = (function(){
 })();
 
 SpotifyPlayer.tracksQueue = TracksQueue;
+SpotifyPlayer.login();
 SpotifyPlayer.startPlayLoop();
 
 app.post('/play/', function(req, res){
@@ -220,30 +223,17 @@ app.post('/resume/', function(req, res){
   res.send("OK");
 });
 
+var server = http.createServer(app);
+var io = require('socket.io')();
+io.attach(server);
 
-var server = app.listen(8080, function () {
-  var host = server.address().address;
-  var port = server.address().port;
-  console.log('Example app listening at http://%s:%s', host, port);
+//not reciving event yet
+io.on('connection', function (socket) { });
+
+server.listen(app.get('port'), function(){
+  console.log('Express server listening on port ' + app.get('port'));
 });
 
-/*
-Spotify.login(username, password, function (err, spotify) {
-  if (err) throw err;
 
-  // first get a "Track" instance from the track URI
-  spotify.get(uri, function (err, track) {
-    if (err) throw err;
-    console.log('Playing: %s - %s', track.artist[0].name, track.name);
 
-    // play() returns a readable stream of MP3 audio data
-    track.play()
-      .pipe(new lame.Decoder())
-      .pipe(new Speaker())
-      .on('finish', function () {
-        spotify.disconnect();
-      });
-  });
 
-});
-*/
