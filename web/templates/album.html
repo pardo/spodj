@@ -1,0 +1,11 @@
+
+<h4>{{ album.name }} {{ album.artists[0].name }}</h4>
+<img src="{{ album.images[1].url }}" />
+<div class="tracks">
+	<div data-album-uri="{{ album.uri }}">ADD ALL</div>
+	{% for track in album.tracks.items %}
+  		<div data-track-uri="{{ track.uri }}" data-track-id="{{ track.id }}">
+  			{{ track.name }} - {{ album.name }} - {{ album.artists[0].name }}
+  		</div>
+	{% endfor %}
+</div>
