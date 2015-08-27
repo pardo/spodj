@@ -146,7 +146,7 @@ $(function(){
 
 	  	var socket = io.connect(window.location.origin);
 	  	socket.on('player.play', function (data) {
-		    AppWidget.getTracks(AppWidget.uriToId(data.uri)).done(function(tracks){
+		    AppWidget.getTracks([AppWidget.uriToId(data.uri)]).done(function(tracks){
                 var track = tracks.tracks[0];
                 $(".current").html(track.name +" - "+ track.album.name +" - "+ track.artists[0].name);
             })
