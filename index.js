@@ -55,7 +55,7 @@ SpotifyPlayer = (function(){
     if (!this.isPlaying() && this.initialized) {
       var uri = this.tracksQueue.next();
       if (uri != null) {
-        io.email("player.start.uri", {
+        io.emit("player.start.uri", {
             uri: uri,
             queueIndex: TracksQueue.queueIndex,
             timePlayed: 0
