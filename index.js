@@ -22,6 +22,41 @@ var password = login.password;
 
 
 
+throttle = function (func, wait, options) {
+    var context, args, result;
+    var timeout = null;
+    var previous = 0;
+    if (!options) options = {};
+    var later = function() {
+      previous = options.leading === false ? 0 : Date.now();
+      timeout = null;
+      result = func.apply(context, args);
+      if (!timeout) context = args = null;
+    };
+    return function() {
+      var now = Date.now();
+      if (!previous && options.leading === false) previous = now;
+      var remaining = wait - (now - previous);
+      context = this;
+      args = arguments;
+      if (remaining <= 0 || remaining > wait) {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
+        }
+        previous = now;
+        result = func.apply(context, args);
+        if (!timeout) context = args = null;
+      } else if (!timeout && options.trailing !== false) {
+        timeout = setTimeout(later, remaining);
+      }
+      return result;
+    };
+};
+
+
+
+
 SpotifyPlayer = (function(){
   var that = this;
   this.initialized = false;
@@ -37,6 +72,10 @@ SpotifyPlayer = (function(){
   this.lame = new Lame.Decoder();
   // pipe() returns destination stream
   this.speaker = this.lame.pipe(new Speaker());
+
+  this.lame.on('end', function () {      
+    console.log("LAME END");
+  });
 
   this.login = function(){
     this.spotify = Spotify.login(username, password, function (err, spotify) {
@@ -95,17 +134,28 @@ SpotifyPlayer = (function(){
     if (this.spotifyStream != null) {
       this.spotifyStream.removeAllListeners("finish");
       if (abort) {
-        this.spotifyStream.abort();  
-      }      
+        this.spotifyStream.abort();
+      }
       this.spotifyStream.unpipe();
     }
+
     this.currentTrack = null;
-    this.trackTimePlayed = null;
+    this.trackTimePlayed = 0;
     that.lastTime = null;
     this.spotifyStream = null;
     this.throttledStream = null;
   };
  
+          
+
+  this._syncTimePlayer = function(){
+    io.emit("player.time", {
+      timePlayed: that.trackTimePlayed
+    });
+  };
+
+  this.syncTimePlayer = throttle(this._syncTimePlayer, 1000);
+
   this.playTrackUri = function(uri){
     if (this.isPlaying() || !this.initialized) return;    
     console.log("Querying %s", uri);
@@ -130,18 +180,20 @@ SpotifyPlayer = (function(){
       // which is a writeable stream      
 
       that.throttledStream.on('data', function (chunk) {
-        if (that.lastTime==null) {
+        if (that.lastTime==null) {        
           that.lastTime = (new Date()).getTime();
         } else {
           that.trackTimePlayed += (new Date()).getTime() - that.lastTime;
           that.lastTime = (new Date()).getTime();
           //console.log("Time played %s", that.trackTimePlayed/1000 );
-        }        
+        }       
+        that.syncTimePlayer();
         that.lame.write(chunk);
-      }).on('finish', function () {      
+      }).on('finish', function () {
+        console.log("END THROLLED");
         setTimeout(function(){
           that.skip();  
-        }, 100);      
+        }, 2000);      
       });
     });
   };

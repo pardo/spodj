@@ -5,7 +5,7 @@
 	<div data-album-uri="{{ album.uri }}">ADD ALL</div>
 	{% for track in album.tracks.items %}
   		<div data-track-uri="{{ track.uri }}" data-track-id="{{ track.id }}">
-  			{{ track.name }} - {{ album.name }} - {{ album.artists[0].name }}
+  			{{ track.name }} - {{ album.name }} - {{ album.artists[0].name }} - {{ track.duration_ms | msToSec }}
   		</div>
 	{% endfor %}
 </div>

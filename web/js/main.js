@@ -9,7 +9,38 @@ $(function(){
 		this.$refreshQueueBtn = $('[data-resfresh-queue]');
 		this.$playerQueue = $('.player-queue');
 		
+
+		this.currentTrack = null;
+		this.currentTrackUri = null;
+
+		this.syncCurrentTrack = function(){
+			return $.ajax({
+				url: "/track/"
+			}).done(function(data){
+				that.syncCurrentTrackUri(data.uri);
+			});	
+		};
+
+		this.syncCurrentTrackUri = function(uri){
+			var d = $.Deferred();
+			this.currentTrackUri = uri;
+			this.getTracks([this.uriToId(uri)])
+			.done(function(tracks){
+				d.resolve(that.currentTrack);
+    			that.currentTrack = tracks.tracks[0];
+			});
+			return d;
+		};
+
 		
+		this.msToSec = function(ms){
+  			ms = parseInt(ms/1000);
+			return parseInt(ms/60)+":"+(("000"+ms%60).slice(-2));
+  		};
+
+		var template = nunjucks.configure('/templates');
+		template.addFilter("msToSec", this.msToSec);
+
 		this.uriToId = function(uri){
 			return uri.split(":")[2];
 		};
@@ -53,7 +84,7 @@ $(function(){
 
 		this.search = function(query){
 			this.apiSearch(query).done(function(response){
-				nunjucks.render('templates/search_result.html',
+				template.render('search_result.html',
 					{
 						albums: response.albums,
 						artists: response.artists,
@@ -94,7 +125,7 @@ $(function(){
 
 		this.$el.on("click", '[data-album-id]', function(){
 			that.getAlbum($(this).data("album-id")).done(function(r){
-				nunjucks.render('templates/album.html', {
+				template.render('album.html', {
 					album: r
 				},
 				function(err, res) {
@@ -108,7 +139,7 @@ $(function(){
 			e.preventDefault();
 			$.ajax({ url: "/queue/", type: "get" }).done(function(r){
 				that.getTracks(r.map(that.uriToId)).done(function(tracks){					
-					nunjucks.render('templates/queue.html', {
+					template.render('queue.html', {
 						tracks: tracks.tracks
 					},
 					function(err, res) {
@@ -145,16 +176,25 @@ $(function(){
         });
 
 	  	var socket = io.connect(window.location.origin);
+	  	
+
+
 	  	socket.on('player.play', function (data) {
-		    AppWidget.getTracks([AppWidget.uriToId(data.uri)]).done(function(tracks){
-                var track = tracks.tracks[0];
-                $(".current").html(track.name +" - "+ track.album.name +" - "+ track.artists[0].name);
+	  		this.syncCurrentTrackUri(data.uri).done(function(track){
+                $(".current").html(that.currentTrack.name +" - "+ that.currentTrack.album.name +" - "+ that.currentTrack.artists[0].name +" - "+ that.msToSec(that.currentTrack.duration_ms) +" -> 0:00");
             })
 	  	});
 
+	  	socket.on('player.time', function (data) {
+	  		if (!that.currentTrack) { return }
+  			$(".current").html(that.currentTrack.name +" - "+ that.currentTrack.album.name +" - "+ that.currentTrack.artists[0].name +" - "+ that.msToSec(that.currentTrack.duration_ms) +" -> "+msToSec(data.timePlayed));	  		
+	  	});
 
+		setTimeout(function(){
+			that.syncCurrentTrack();
+		});
+	  	
 		return this;
-	
 	})();
 
 	

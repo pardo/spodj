@@ -23,7 +23,7 @@
 	<div>
 		{% for track in tracks.items %}
 	  		<div data-track-uri="{{ track.uri }}" data-track-id="{{ track.id }}">
-	  			{{ track.name }} - {{ track.album.name }} - {{ track.artists[0].name }}
+	  			{{ track.name }} - {{ track.album.name }} - {{ track.artists[0].name }} - {{ track.duration_ms | msToSec }}
 	  		</div>
 		{% endfor %}
 	</div>	
