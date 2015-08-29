@@ -1,6 +1,7 @@
 var http = require('http');
 var express = require('express');
 var bodyParser = require('body-parser');
+var playlistRoutes = require('./routes/playlist.js');
 
 var app = express();
 app.set('port', 9000);
@@ -54,9 +55,6 @@ throttle = function (func, wait, options) {
     };
 };
 
-
-
-
 SpotifyPlayer = (function(){
   var that = this;
   this.initialized = false;
@@ -72,10 +70,6 @@ SpotifyPlayer = (function(){
   this.lame = new Lame.Decoder();
   // pipe() returns destination stream
   this.speaker = this.lame.pipe(new Speaker());
-
-  this.lame.on('end', function () {      
-    console.log("LAME END");
-  });
 
   this.login = function(){
     this.spotify = Spotify.login(username, password, function (err, spotify) {
@@ -246,6 +240,9 @@ TracksQueue = (function(){
 SpotifyPlayer.tracksQueue = TracksQueue;
 SpotifyPlayer.login();
 SpotifyPlayer.startPlayLoop();
+
+
+app.use(playlistRoutes);
 
 app.post('/play/', function(req, res){
   var uri = req.body.uri;

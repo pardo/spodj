@@ -1,4 +1,76 @@
 $(function(){
+
+	var template = nunjucks.configure('/templates');	
+	Filters = {
+		msToSec: function(ms){  	
+	  		ms = parseInt(ms/1000);
+			return parseInt(ms/60)+":"+(("000"+ms%60).slice(-2));
+		}
+	};	
+	template.addFilter("msToSec", Filters.msToSec);
+
+	Playlist = function(doc){
+		var that = this;
+		
+		this.setDoc = function(doc) {							
+			this._id = doc._id;
+			this.name: doc.name;
+			this.tracks: doc.tracks;			
+		};
+
+		this.getDoc = function() {
+			return {				
+				name: this.name,
+				tracks: this.tracks
+			}
+		};
+
+		this.save = function() {
+			var url = "/playlist/"
+			if (this._id != undefined) {
+				url + = this._id+"/"
+			}
+			var p = $.ajax({ url: url, type: "post", data: this.getDoc() });
+			p.done(function(doc){
+				that.setDoc(doc);
+			});
+			return p
+		};
+
+		this.addTrack = function(uri) {
+			if (this._id == undefined) {
+				this.save().done(function(){
+					that.addTrack(uri);
+				});
+			}
+			var p = $.ajax({
+				url: "/playlist/"+this._id+"/add/",
+				type: "post",
+				data: { track: uri }
+			});
+			p.done(function(doc){
+				that.setDoc(doc);
+			});
+			return p
+		};
+		
+	};
+	
+	Playlist.all = function(){
+		return $.ajax({ url: "/playlist/" });
+	};
+		
+		
+		$.ajax({ url: "/playlist/qpJEHJsQvipBixip/", type: "post", data: gg }).done(function(r){ console.log(r) })
+		$.ajax({ url: "/playlist/qpJEHJsQvipBixip/", }).done(function(r){ gg = r; console.log(r) })
+
+		gg.tracks = ["HOLA"];
+		$.ajax({ url: "/playlist/qpJEHJsQvipBixip/", type: "post", data: gg }).done(function(r){ console.log(r) })
+
+		
+
+
+
 	AppWidget = (function(){
 		var that = this;
 		this.$el = $(".app-widget");
@@ -12,13 +84,19 @@ $(function(){
 
 		this.currentTrack = null;
 		this.currentTrackUri = null;
-
+		
 		this.syncCurrentTrack = function(){
-			return $.ajax({
+			var d = $.Deferred();			
+			$.ajax({
 				url: "/track/"
 			}).done(function(data){
-				that.syncCurrentTrackUri(data.uri);
-			});	
+				if (!data.uri) {
+					d.reject();
+				} else {
+					that.syncCurrentTrackUri(data.uri);	
+				}				
+			});
+			return d;
 		};
 
 		this.syncCurrentTrackUri = function(uri){
@@ -30,16 +108,7 @@ $(function(){
     			that.currentTrack = tracks.tracks[0];
 			});
 			return d;
-		};
-
-		
-		this.msToSec = function(ms){
-  			ms = parseInt(ms/1000);
-			return parseInt(ms/60)+":"+(("000"+ms%60).slice(-2));
-  		};
-
-		var template = nunjucks.configure('/templates');
-		template.addFilter("msToSec", this.msToSec);
+		};	
 
 		this.uriToId = function(uri){
 			return uri.split(":")[2];
@@ -61,12 +130,20 @@ $(function(){
 		};
 
 		this.getTracks = function(ids){
+			if (ids == null || ids.length == 0) {
+				var d = $.Deferred();
+				d.reject();
+				return d;
+			}
+
 			return $.ajax({ 
 				url: "https://api.spotify.com/v1/tracks",
 				data: {
 					"ids": ids.join(",")
 				}
-			});			
+			});
+
+
 		};
 
 		this.apiSearch = function(query, offset){
@@ -84,6 +161,13 @@ $(function(){
 
 		this.search = function(query){
 			this.apiSearch(query).done(function(response){
+				response.albums.items = response.albums.items.filter(function(d){
+					return d.available_markets.indexOf("AR") != -1;
+				});
+				response.tracks.items = response.tracks.items.filter(function(d){
+					return d.available_markets.indexOf("AR") != -1;
+				});
+
 				template.render('search_result.html',
 					{
 						albums: response.albums,
@@ -116,15 +200,30 @@ $(function(){
 			});
 		};
 
+		this.refreshQueue = function(){
+			$.ajax({ url: "/queue/", type: "get" }).done(function(r){
+				that.getTracks(r.map(that.uriToId)).done(function(tracks){
+					template.render('queue.html', {
+						tracks: tracks.tracks
+					},
+					function(err, res) {
+						if (err) throw err;
+						this.$playerQueue.html(res);						
+					});
+				});				
+			});
+		};
+			
 		this.$el.on("click", '[data-track-uri]', function(){
 			that.queueTrackUri($(this).data("track-uri"));
 		});
+
 		this.$el.on("click", '[data-album-uri]', function(){
 			that.queueAlbumUri($(this).data("album-uri"));
 		});
 
 		this.$el.on("click", '[data-album-id]', function(){
-			that.getAlbum($(this).data("album-id")).done(function(r){
+			that.getAlbum($(this).data("album-id")).done(function(r){				
 				template.render('album.html', {
 					album: r
 				},
@@ -137,17 +236,7 @@ $(function(){
 
 		this.$refreshQueueBtn.click(function(e){
 			e.preventDefault();
-			$.ajax({ url: "/queue/", type: "get" }).done(function(r){
-				that.getTracks(r.map(that.uriToId)).done(function(tracks){					
-					template.render('queue.html', {
-						tracks: tracks.tracks
-					},
-					function(err, res) {
-						if (err) throw err;
-						this.$playerQueue.html(res);						
-					});
-				});				
-			});
+			that.refreshQueue();
 		});
 
 		this.$searchBtn.click(function(e){
@@ -175,24 +264,29 @@ $(function(){
             $.ajax({ url: "/next/", type: "post" });
         });
 
+
 	  	var socket = io.connect(window.location.origin);
 	  	
-
-
 	  	socket.on('player.play', function (data) {
-	  		this.syncCurrentTrackUri(data.uri).done(function(track){
-                $(".current").html(that.currentTrack.name +" - "+ that.currentTrack.album.name +" - "+ that.currentTrack.artists[0].name +" - "+ that.msToSec(that.currentTrack.duration_ms) +" -> 0:00");
+	  		that.syncCurrentTrackUri(data.uri).done(function(track){
+                $(".current").html(that.currentTrack.name +" - "+ that.currentTrack.album.name +" - "+ that.currentTrack.artists[0].name +" - "+ Filters.msToSec(that.currentTrack.duration_ms) +" -> 0:00");
             })
 	  	});
 
 	  	socket.on('player.time', function (data) {
 	  		if (!that.currentTrack) { return }
-  			$(".current").html(that.currentTrack.name +" - "+ that.currentTrack.album.name +" - "+ that.currentTrack.artists[0].name +" - "+ that.msToSec(that.currentTrack.duration_ms) +" -> "+msToSec(data.timePlayed));	  		
+  			$(".current").html(that.currentTrack.name +" - "+ that.currentTrack.album.name +" - "+ that.currentTrack.artists[0].name +" - "+ Filters.msToSec(that.currentTrack.duration_ms) +" -> "+Filters.msToSec(data.timePlayed));	  		
 	  	});
 
+		socket.on('queue.removed', function(){ that.refreshQueue() });
+		socket.on('queue.added', function(){ that.refreshQueue() });
+
+
 		setTimeout(function(){
-			that.syncCurrentTrack();
-		});
+			that.syncCurrentTrack().fail(function(){
+				setTimeout(function(){that.syncCurrentTrack()}, 1000);
+			});
+		}, 1000);
 	  	
 		return this;
 	})();
