@@ -11,11 +11,13 @@ $(function(){
 
 	Playlist = function(doc){
 		var that = this;
+
+		//for the moment this object duplicates funtions method
 		
 		this.setDoc = function(doc) {							
 			this._id = doc._id;
-			this.name: doc.name;
-			this.tracks: doc.tracks;			
+			this.name = doc.name;
+			this.tracks = doc.tracks;			
 		};
 
 		this.getDoc = function() {
@@ -28,7 +30,7 @@ $(function(){
 		this.save = function() {
 			var url = "/playlist/"
 			if (this._id != undefined) {
-				url + = this._id+"/"
+				url += this._id+"/";
 			}
 			var p = $.ajax({ url: url, type: "post", data: this.getDoc() });
 			p.done(function(doc){
@@ -53,22 +55,39 @@ $(function(){
 			});
 			return p
 		};
-		
+
+		if (doc != undefined) {
+			this.setDoc(doc);
+		} else {
+			this.name = "";
+			this.tracks = [];
+		}
+		return this;
 	};
 	
 	Playlist.all = function(){
-		return $.ajax({ url: "/playlist/" });
+		var d = $.Deferred();
+		$.ajax({ url: "/playlist/" }).done(function(r){
+			d.resolve(r.map(function(doc){
+				var p = new Playlist();
+				p.setDoc(doc);
+				return p
+			}));
+		});
+		return d
 	};
-		
-		
-		$.ajax({ url: "/playlist/qpJEHJsQvipBixip/", type: "post", data: gg }).done(function(r){ console.log(r) })
-		$.ajax({ url: "/playlist/qpJEHJsQvipBixip/", }).done(function(r){ gg = r; console.log(r) })
 
-		gg.tracks = ["HOLA"];
-		$.ajax({ url: "/playlist/qpJEHJsQvipBixip/", type: "post", data: gg }).done(function(r){ console.log(r) })
-
-		
-
+	Playlist.get = function(id){
+		var d = $.Deferred();
+		$.ajax({
+			url: "/playlist/"+id+"/"			
+		}).done(function(doc){
+			var p = new Playlist();
+			p.setDoc(doc);
+			d.resolve(p);
+		});
+		return d
+	};	
 
 
 	AppWidget = (function(){
@@ -104,8 +123,8 @@ $(function(){
 			this.currentTrackUri = uri;
 			this.getTracks([this.uriToId(uri)])
 			.done(function(tracks){
-				d.resolve(that.currentTrack);
     			that.currentTrack = tracks.tracks[0];
+				d.resolve(that.currentTrack);
 			});
 			return d;
 		};	
@@ -199,18 +218,44 @@ $(function(){
 				}
 			});
 		};
+		
+		this.getQueue = function(){
+			return $.ajax({ url: "/queue/", type: "get" })
+		};
+
+		this.getQueueTracks = function(){
+			var d = $.Deferred();
+			this.getQueue().done(function(r){
+				that.getTracks(r.map(that.uriToId)).then(d.resolve, d.reject);
+			});
+			return d;
+		};
 
 		this.refreshQueue = function(){
-			$.ajax({ url: "/queue/", type: "get" }).done(function(r){
-				that.getTracks(r.map(that.uriToId)).done(function(tracks){
-					template.render('queue.html', {
-						tracks: tracks.tracks
-					},
-					function(err, res) {
-						if (err) throw err;
-						this.$playerQueue.html(res);						
-					});
-				});				
+			this.getQueueTracks().done(function(tracks){
+				template.render('queue.html', {
+					tracks: tracks.tracks
+				},
+				function(err, res) {
+					if (err) throw err;
+					this.$playerQueue.html(res);
+				});
+			});
+		};
+
+		this.saveQueueToPlaylist = function(playlist){
+			this.getQueue().done(function(r){
+				playlist.tracks = r;
+				playlist.save();
+			});
+		};
+
+		this.saveQueueToNewPlaylist = function(name){			
+			this.getQueue().done(function(r){
+				var p = new Playlist();
+				p.name = name;
+				p.tracks = r;
+				p.save();
 			});
 		};
 			
