@@ -1,0 +1,65 @@
+@font-face {
+  font-family: "sen";
+  src: url("../fonts/sen-regular-webfont.eot");
+  src: url("../fonts/sen-regular-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/sen-regular-webfont.woff") format("woff"), url("../fonts/sen-regular-webfont.ttf") format("truetype"), url("../fonts/sen-regular-webfont.svg#sen") format("svg");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "sen";
+  src: url("../fonts/sen-bold-webfont.eot");
+  src: url("../fonts/sen-bold-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/sen-bold-webfont.woff") format("woff"), url("../fonts/sen-bold-webfont.ttf") format("truetype"), url("../fonts/sen-bold-webfont.svg#sen") format("svg");
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "sen";
+  src: url("../fonts/sen-extrabold-webfont.eot");
+  src: url("../fonts/sen-extrabold-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/sen-extrabold-webfont.woff") format("woff"), url("../fonts/sen-extrabold-webfont.ttf") format("truetype"), url("../fonts/sen-extrabold-webfont.svg#sen") format("svg");
+  font-weight: 900;
+  font-style: normal;
+}
+a,
+a:hover {
+  text-decoration: none;
+}
+body {
+  font-family: 'sen', "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #262f39;
+  background: #e8dfdf;
+}
+#header {
+  padding: 10px;
+  background: #ca2a2a;
+}
+.sidebar {
+  float: right;
+}
+#search input {
+  width: 370px;
+  line-height: 2.2em;
+  border-radius: 25px;
+  border: none;
+  padding: 0 15px;
+}
+.controls {
+  float: left;
+}
+.controls.main i {
+  font-size: 35px;
+  color: #e8dfdf;
+}
+.controls.main .circle {
+  background: #262f39;
+  border-radius: 50px;
+  padding: 7px;
+}
+.controls.volume label {
+  float: left;
+}
+.controls.volume label i {
+  font-size: 25px;
+  color: #e8dfdf;
+}

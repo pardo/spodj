@@ -1,0 +1,56 @@
+// @import (reference) "lesshat.less";
+@import "font.less";
+@import "variables.less";
+
+a, a:hover{
+  text-decoration: none;
+}
+.regular(){
+  font-family: 'sen', "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 400;
+}
+
+body {
+  .regular();
+  font-size: 14px;
+  color: @dark;
+  background: @light;
+}
+#header{
+  padding: 10px;
+  background: @primary;
+}
+.sidebar{
+  float: right;
+}
+#search{ 
+  input{
+    width: 370px;
+    line-height: 2.2em;
+    border-radius: 25px;
+    border: none;
+    padding: 0 15px;
+  }
+}
+.controls{
+  float: left;
+  &.main{
+    i{
+      font-size: 35px;
+      color:@light;
+
+    }
+    .circle{
+      background: @dark;
+      border-radius: 50px;
+      padding: 7px;
+    }
+  }
+  &.volume label{
+    float: left;
+    i{
+      font-size: 25px;
+      color:@light;
+    }
+  }
+} 
