@@ -132,8 +132,13 @@ SpotifyPlayer = (function(){
       }
       this.spotifyStream.unpipe();
     }
-
-    this.currentTrack = null;
+    if (abort) {
+      // when aborting delay song chage to flush out Lame
+      setTimeout(function(){
+        that.currentTrack = null;
+      }, 1500);
+    }
+    
     this.trackTimePlayed = 0;
     that.lastTime = null;
     this.spotifyStream = null;

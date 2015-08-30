@@ -101,6 +101,7 @@ $(function(){
 		this.$playerQueue = $('.player-queue');
 		
 
+		this.cachedQueueTracks = [];
 		this.currentTrack = null;
 		this.currentTrackUri = null;
 		
@@ -219,6 +220,14 @@ $(function(){
 			});
 		};
 		
+
+		this.queueTracksFromPlaylist = function(playlist){			
+			for (var i = 0; i < playlist.tracks.length; i++) {
+				this.queueTrackUri(playlist.tracks[i]);
+			};			
+		};
+			
+
 		this.getQueue = function(){
 			return $.ajax({ url: "/queue/", type: "get" })
 		};
@@ -233,13 +242,19 @@ $(function(){
 
 		this.refreshQueue = function(){
 			this.getQueueTracks().done(function(tracks){
-				template.render('queue.html', {
-					tracks: tracks.tracks
-				},
-				function(err, res) {
-					if (err) throw err;
-					this.$playerQueue.html(res);
-				});
+				that.cachedQueueTracks = tracks.tracks;				
+				that.renderQueue();
+			});
+		};
+
+		this.renderQueue = function(){
+			template.render('queue.html', {
+				tracks: this.cachedQueueTracks,
+				currentTrack: this.currentTrack
+			},
+			function(err, res) {
+				if (err) throw err;
+				this.$playerQueue.html(res);
 			});
 		};
 
@@ -258,7 +273,8 @@ $(function(){
 				p.save();
 			});
 		};
-			
+
+		
 		this.$el.on("click", '[data-track-uri]', function(){
 			that.queueTrackUri($(this).data("track-uri"));
 		});
@@ -315,6 +331,7 @@ $(function(){
 	  	socket.on('player.play', function (data) {
 	  		that.syncCurrentTrackUri(data.uri).done(function(track){
                 $(".current").html(that.currentTrack.name +" - "+ that.currentTrack.album.name +" - "+ that.currentTrack.artists[0].name +" - "+ Filters.msToSec(that.currentTrack.duration_ms) +" -> 0:00");
+                that.renderQueue();
             })
 	  	});
 
