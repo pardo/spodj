@@ -1,4 +1,4 @@
-// @import (reference) "lesshat.less";
+@import (reference) "lesshat.less";
 @import "font.less";
 @import "variables.less";
 
@@ -20,30 +20,39 @@ body {
   padding: 10px;
   background: @primary;
 }
-.sidebar{
-  float: right;
+.dark_bg{
+  background: @dark;
+  color:@light;
 }
-#search{ 
+#search{
+  position: relative;
   input{
+    margin-top: 5px;
     width: 370px;
     line-height: 2.2em;
     border-radius: 25px;
     border: none;
     padding: 0 15px;
   }
+  .search-icon{
+    position: absolute;
+    top: 13px;
+    right: 12px;
+  }
 }
 .controls{
   float: left;
   &.main{
     i{
-      font-size: 35px;
+      font-size: 30px;
       color:@light;
 
     }
     .circle{
+      display: inline-block;
       background: @dark;
       border-radius: 50px;
-      padding: 7px;
+      padding: 5px;
     }
   }
   &.volume label{
@@ -53,4 +62,17 @@ body {
       color:@light;
     }
   }
-} 
+}
+/* playlist column */
+.playlist{
+  padding: 10px;
+}
+/* queue column */
+.play-qeue{
+  padding: 0;
+  .playing-now{
+    background: url('https://unsplash.it/350?image=33') no-repeat;
+    width:100%;
+    min-height:200px;
+  }
+}

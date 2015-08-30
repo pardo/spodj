@@ -34,27 +34,38 @@ body {
   padding: 10px;
   background: #ca2a2a;
 }
-.sidebar {
-  float: right;
+.dark_bg {
+  background: #262f39;
+  color: #e8dfdf;
+}
+#search {
+  position: relative;
 }
 #search input {
+  margin-top: 5px;
   width: 370px;
   line-height: 2.2em;
   border-radius: 25px;
   border: none;
   padding: 0 15px;
 }
+#search .search-icon {
+  position: absolute;
+  top: 13px;
+  right: 12px;
+}
 .controls {
   float: left;
 }
 .controls.main i {
-  font-size: 35px;
+  font-size: 30px;
   color: #e8dfdf;
 }
 .controls.main .circle {
+  display: inline-block;
   background: #262f39;
   border-radius: 50px;
-  padding: 7px;
+  padding: 5px;
 }
 .controls.volume label {
   float: left;
@@ -62,4 +73,17 @@ body {
 .controls.volume label i {
   font-size: 25px;
   color: #e8dfdf;
+}
+/* playlist column */
+.playlist {
+  padding: 10px;
+}
+/* queue column */
+.play-qeue {
+  padding: 0;
+}
+.play-qeue .playing-now {
+  background: url('https://unsplash.it/350?image=33') no-repeat;
+  width: 100%;
+  min-height: 200px;
 }
