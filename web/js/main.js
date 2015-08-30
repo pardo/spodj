@@ -121,7 +121,7 @@ $(function(){
 				if (!data.uri) {
 					d.reject();
 				} else {
-					that.syncCurrentTrackUri(data.uri);	
+					that.syncCurrentTrackUri(data.uri).then(d.resolve, d.reject);
 				}				
 			});
 			return d;

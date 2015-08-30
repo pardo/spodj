@@ -137,6 +137,8 @@ SpotifyPlayer = (function(){
       setTimeout(function(){
         that.currentTrack = null;
       }, 1500);
+    } else {
+      that.currentTrack = null;
     }
     
     this.trackTimePlayed = 0;
@@ -292,6 +294,10 @@ app.post('/next/', function(req, res){
 app.post('/resume/', function(req, res){  
   SpotifyPlayer.resume();
   res.send("OK");
+});
+
+app.get('/player/', function(req, res){  
+  res.sendFile(__dirname + '/web/player.html');
 });
 
 app.get(/\/.*/, function(req, res){
