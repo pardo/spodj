@@ -14,54 +14,58 @@
   </head>
   <body>
     <div id="header">
-      <div class="row">
-        <div class="col-sm-6">
-          <div id="search" class="pull-right">
-            <form action="">
-              <input type="search" name="main-search" id="" placeholder="Search for Song, Album or Artist">
-              <span class="search-icon"><i class="icon-search"></i></span>
-            </form>
-          </div>
-        </div>
-        <div class="col-sm-6">
-          <div class="player">
-            <div class="controls main">
-              <a href="" class="prev"><i class="icon-skip-previous"></i></a>
-              <a href="" class="play"><i class="icon-play-arrow circle"></i></a>
-              <a href="" class="next"><i class="icon-skip-next"></i></a>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-6">
+            <div id="search" class="pull-right">
+              <form action="">
+                <input type="search" name="main-search" id="" placeholder="Search for Song, Album or Artist">
+                <span class="search-icon"><i class="icon-search"></i></span>
+              </form>
             </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="player">
+              <div class="controls main">
+                <a href="" class="prev"><i class="icon-skip-previous"></i></a>
+                <a href="" class="play"><i class="icon-play-arrow circle"></i></a>
+                <a href="" class="next"><i class="icon-skip-next"></i></a>
+              </div>
 
-            <div class="controls volume">
-              <div class="form-group">
-                  <label for="volume"><i class="icon-volume-up"></i></label>
-                  <!-- <input type="range" class="form-control" id="volume"> -->
-                </div>
+              <div class="controls volume">
+                <div class="form-group">
+                    <label for="volume"><i class="icon-volume-up"></i></label>
+                    <!-- <input type="range" class="form-control" id="volume"> -->
+                  </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
     </div>
-    <div class="row">
-      <div class="col-sm-2">
       <div class="playlist dark_bg">
         <h3>playlist</h3>
       </div>
-      </div>
-      <div class="col-sm-7 col-lg-8">
-        <h3>search-result</h3>
-      </div>
-      <div class="col-sm-3 col-lg-2">
-        <div class="play-qeue dark_bg">
-          <div class="playing-now">
-            
+      <div class="play-qeue dark_bg">
+        <div class="playing-now">
+          <img src="https://unsplash.it/350?image=33" class="cover">
+          <div class="info">
+            <p>Song Name</p>
+            <p>Artist Name</p>
           </div>
         </div>
+        <div class="qeue">
+           <ul>
+             <li>soy una cancion</li>
+           </ul>
+         </div>
       </div>
-    </div>
+      <div class="search-result">
+        <h3>search-result</h3>
+      </div>
 
     <!-- jQuery first, then Bootstrap JS. -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/js/bootstrap.js"></script>
+    <script src="/static_html/js/bootstrap.min.js"></script>
   </body>
 </html>

@@ -55,24 +55,48 @@ body {
       padding: 5px;
     }
   }
-  &.volume label{
-    float: left;
-    i{
-      font-size: 25px;
-      color:@light;
+  &.volume{
+    float: right;
+    label{
+      float: left;
+      i{
+        font-size: 25px;
+        color:@light;
+      }
     }
   }
 }
-/* playlist column */
+/* Playlist Column */
 .playlist{
+  width:250px;
+  float: left;
   padding: 10px;
 }
-/* queue column */
+
+/* Queue Column */
 .play-qeue{
+  width:300px;
+  float: right;
   padding: 0;
-  .playing-now{
-    background: url('https://unsplash.it/350?image=33') no-repeat;
+  .playing-now{    
     width:100%;
-    min-height:200px;
+    position: relative;
+    img{
+      max-width: 100%;
+    }
+    .info{
+      position: absolute;
+      bottom:0;
+      left: 0;
+      p{
+        padding: 0 10px;
+      }
+    }
   }
+}
+/* Search Column */
+
+.search-result{
+  margin: 0 300px 0 250px;
+  padding: 15px;
 }

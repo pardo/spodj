@@ -67,6 +67,9 @@ body {
   border-radius: 50px;
   padding: 5px;
 }
+.controls.volume {
+  float: right;
+}
 .controls.volume label {
   float: left;
 }
@@ -74,16 +77,35 @@ body {
   font-size: 25px;
   color: #e8dfdf;
 }
-/* playlist column */
+/* Playlist Column */
 .playlist {
+  width: 250px;
+  float: left;
   padding: 10px;
 }
-/* queue column */
+/* Queue Column */
 .play-qeue {
+  width: 300px;
+  float: right;
   padding: 0;
 }
 .play-qeue .playing-now {
-  background: url('https://unsplash.it/350?image=33') no-repeat;
   width: 100%;
-  min-height: 200px;
+  position: relative;
+}
+.play-qeue .playing-now img {
+  max-width: 100%;
+}
+.play-qeue .playing-now .info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+.play-qeue .playing-now .info p {
+  padding: 0 10px;
+}
+/* Search Column */
+.search-result {
+  margin: 0 300px 0 250px;
+  padding: 15px;
 }
