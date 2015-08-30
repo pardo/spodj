@@ -294,6 +294,10 @@ app.post('/resume/', function(req, res){
   res.send("OK");
 });
 
+app.get(/\/.*/, function(req, res){
+  res.sendFile(__dirname + '/web/index.html');
+});
+
 var server = http.createServer(app);
 var io = require('socket.io')();
 io.attach(server);

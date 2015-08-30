@@ -96,6 +96,7 @@ $(function(){
 		this.$input = this.$el.find("input");
 		this.$results = $(".search-results");
 		this.$albumResults = $(".album-results");
+		this.$artistResults = $(".artist-results");
 		this.$searchBtn = $(".start-search");
 		this.$refreshQueueBtn = $('[data-resfresh-queue]');
 		this.$playerQueue = $('.player-queue');
@@ -162,17 +163,69 @@ $(function(){
 					"ids": ids.join(",")
 				}
 			});
-
-
 		};
 
-		this.apiSearch = function(query, offset){
-			offset = offset || 0;			
+
+		this.getArtist = function(artistId) {
+			return $.ajax({ 
+				url: "https://api.spotify.com/v1/artists/"+artistId
+			});			
+		};
+
+		this.getArtistAlbums = function(artistId, offset) {
+			offset = offset || 0;
+			return $.ajax({ 
+				url: "https://api.spotify.com/v1/artists/"+artistId+"/albums",
+				data: {
+					"album_type": "album,compilation,appears_on",
+					"limit": "50",
+					"market": "AR",
+					"offset": offset					
+				}
+			});			
+		};
+
+		this.getAlbums = function(ids) {
+			if (ids == null || ids.length == 0) {
+				var d = $.Deferred();
+				d.reject();
+				return d;
+			}
+
+			return $.ajax({ 
+				url: "https://api.spotify.com/v1/albums",
+				data: {
+					"ids": ids.join(","),
+					"market": "AR"
+				}
+			});
+		};
+
+		 
+
+		this.getArtistAndAlbums = function(artistId) {			
+			var d = $.Deferred();
+			$.when(
+				this.getArtist(artistId),
+				this.getArtistAlbums(artistId)
+			).done(function(artist, albums){
+				//artist and albums contains all the args from the deferred callback > [0]
+				that.getAlbums(albums[0].items.map(function(d){ return d.id }))
+					.done(function(response){
+						d.resolve(artist[0], response);
+					});
+			});
+			return d;
+		};
+
+		this.apiSearch = function(query, offset) {
+			offset = offset || 0;
 			return $.ajax({ 
 				url: "https://api.spotify.com/v1/search",
 				data: {
 					"type": "album,artist,track",
 					"limit": "20",
+					"market": "AR",
 					"offset": offset,
 					"q": query
 				}
@@ -272,8 +325,7 @@ $(function(){
 				p.tracks = r;
 				p.save();
 			});
-		};
-
+		};		
 		
 		this.$el.on("click", '[data-track-uri]', function(){
 			that.queueTrackUri($(this).data("track-uri"));
