@@ -5,9 +5,16 @@ $(function(){
 		msToSec: function(ms){  	
 	  		ms = parseInt(ms/1000);
 			return parseInt(ms/60)+":"+(("000"+ms%60).slice(-2));
+		},
+		albumDate: function(date){
+			return date.split("-")[0];
 		}
-	};	
-	template.addFilter("msToSec", Filters.msToSec);
+	};
+
+	for ( k in Filters ) {
+		template.addFilter(k, Filters[k]);
+	}
+
 
 	Playlist = function(doc){
 		var that = this;
@@ -177,7 +184,7 @@ $(function(){
 			return $.ajax({ 
 				url: "https://api.spotify.com/v1/artists/"+artistId+"/albums",
 				data: {
-					"album_type": "album,compilation,appears_on",
+					"album_type": "album,compilation",
 					"limit": "50",
 					"market": "AR",
 					"offset": offset					
@@ -335,16 +342,14 @@ $(function(){
 			that.queueAlbumUri($(this).data("album-uri"));
 		});
 
-		this.$el.on("click", '[data-album-id]', function(){
-			that.getAlbum($(this).data("album-id")).done(function(r){				
-				template.render('album.html', {
-					album: r
-				},
-				function(err, res) {
-					if (err) throw err;
-					that.$albumResults.html(res);
-				});
-			});			
+		this.$el.on("click", '[data-album-id]', function(e){
+			e.preventDefault();
+			page("/album/"+$(this).data("album-id"));
+		});
+
+		this.$el.on("click", '[data-artist-id]', function(e){
+			e.preventDefault();
+			page("/artist/"+$(this).data("artist-id"));
 		});
 
 		this.$refreshQueueBtn.click(function(e){
@@ -354,13 +359,13 @@ $(function(){
 
 		this.$searchBtn.click(function(e){
 			e.preventDefault();
-			that.search(that.$input.val());
+			page("/search/"+encodeURIComponent(that.$input.val()));
 		});
 
 		this.$input.on("keydown", function(e){
 			if (e.which == 13) {
 				e.preventDefault();
-				that.search(that.$input.val());
+				page("/search/"+encodeURIComponent(that.$input.val()));
 			}
 		});
 
@@ -368,33 +373,41 @@ $(function(){
             e.preventDefault();
             $.ajax({ url: "/pause/", type: "post" });
         });
+
         $("[data-player-resume]").click(function(e){
             e.preventDefault();
             $.ajax({ url: "/resume/", type: "post" });
         });
+
         $("[data-player-next]").click(function(e){
             e.preventDefault();
             $.ajax({ url: "/next/", type: "post" });
         });
 
 
-	  	var socket = io.connect(window.location.origin);
-	  	
-	  	socket.on('player.play', function (data) {
-	  		that.syncCurrentTrackUri(data.uri).done(function(track){
-                $(".current").html(that.currentTrack.name +" - "+ that.currentTrack.album.name +" - "+ that.currentTrack.artists[0].name +" - "+ Filters.msToSec(that.currentTrack.duration_ms) +" -> 0:00");
-                that.renderQueue();
-            })
-	  	});
+        try{
+        	io;
+        } catch(e){
+        	io = null;
+        }
+        if (io) {
+		  	var socket = io.connect(window.location.origin);
+		  	
+		  	socket.on('player.play', function (data) {
+		  		that.syncCurrentTrackUri(data.uri).done(function(track){
+	                $(".current").html(that.currentTrack.name +" - "+ that.currentTrack.album.name +" - "+ that.currentTrack.artists[0].name +" - "+ Filters.msToSec(that.currentTrack.duration_ms) +" -> 0:00");
+	                that.renderQueue();
+	            })
+		  	});
 
-	  	socket.on('player.time', function (data) {
-	  		if (!that.currentTrack) { return }
-  			$(".current").html(that.currentTrack.name +" - "+ that.currentTrack.album.name +" - "+ that.currentTrack.artists[0].name +" - "+ Filters.msToSec(that.currentTrack.duration_ms) +" -> "+Filters.msToSec(data.timePlayed));	  		
-	  	});
+		  	socket.on('player.time', function (data) {
+		  		if (!that.currentTrack) { return }
+	  			$(".current").html(that.currentTrack.name +" - "+ that.currentTrack.album.name +" - "+ that.currentTrack.artists[0].name +" - "+ Filters.msToSec(that.currentTrack.duration_ms) +" -> "+Filters.msToSec(data.timePlayed));	  		
+		  	});
 
-		socket.on('queue.removed', function(){ that.refreshQueue() });
-		socket.on('queue.added', function(){ that.refreshQueue() });
-
+			socket.on('queue.removed', function(){ that.refreshQueue() });
+			socket.on('queue.added', function(){ that.refreshQueue() });        	
+        }
 
 		setTimeout(function(){
 			that.syncCurrentTrack().fail(function(){
@@ -402,9 +415,41 @@ $(function(){
 			});
 		}, 1000);
 	  	
+
+		//PATHs
 		return this;
 	})();
 
+	page('/search/:query', function(context){
+		AppWidget.search(context.params.query);
+	});
+
+	page('/album/:albumId', function(context){
+		AppWidget.getAlbum(context.params.albumId).done(function(r){
+			template.render('album.html', {
+				album: r
+			},
+			function(err, res) {
+				if (err) throw err;
+				AppWidget.$albumResults.html(res);
+			});
+		});
+	});
+
+	page('/artist/:artistId', function(context){
+		AppWidget.getArtistAndAlbums(context.params.artistId).done(function(artist, albums){
+			template.render('artist.html', {
+				albums: albums.albums,
+				artist: artist
+			},
+			function(err, res) {
+				if (err) throw err;
+				AppWidget.$artistResults.html(res);
+			});
+		});
+	});
+	
+	page();
 	
 
 });
