@@ -1,0 +1,19 @@
+body{
+	font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+	background: #fff;
+}
+a,a:hover{
+	color:#EC1227;
+}
+.search_box{
+	background: #EC1227;
+	width:100%;
+	padding: 10px;
+	color:#fff;
+}
+.search_box input, .search_box .start-search{
+	display: inline-block;
+}
+.search_box .start-search{
+
+}

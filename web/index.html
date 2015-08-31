@@ -1,5 +1,55 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>SpoDJ</title>
+    <link href="/css/normalize.css" rel="stylesheet">
+
+    <link href="/css/style.css" rel="stylesheet">
+
+    <script type="text/javascript" src="/js/jquery-2.1.4.min.js"></script>
+  	<script type="text/javascript" src="/js/nunjucks.min.js"></script>
+  	<script type="text/javascript" src="/js/page.js"></script>
+  	<script src="/socket.io/socket.io.js"></script>
+  	<script type="text/javascript" src="/js/main.js"></script>
+</head>
+<body>
+  <div class="app-widget">
+  	<div class="search_box">
+			<input type="search" name="search"> <div class="start-search">Search</div>
+
+  	</div>
+
+		<div class="album-results"></div>
+
+		<div class="artist-results"></div>
+
+		<div class="search-results"></div>
+
+		<h3>Player Queue</h3>
+        <div class="player">
+		    <a href="#" data-player-pause>Pause</i></a>
+		    <a href="#" data-player-resume>Resume</a>
+		    <a href="#" data-player-next>Next</a>
+		    <a href="#" data-resfresh-queue>Refresh</a>
+				<progress value="10" max="150"></progress>
+            <div class="current"></div>
+
+            <hr>
+
+        </div>
+		<div class="player-queue"></div>
+
+	</div>
+</body>
+</html>
+
+
+<html>
+<!-- <head>
 	<title>SpoDJ</title>
 	<script type="text/javascript" src="/js/jquery-2.1.4.min.js"></script>
 	<script type="text/javascript" src="/js/nunjucks.min.js"></script>
@@ -10,7 +60,7 @@
 <body>
 	<div class="app-widget">
 		<input type="search" name="search"> <div class="start-search">Search</div>
-		
+
 		<div class="album-results"></div>
 
 		<div class="artist-results"></div>
@@ -32,7 +82,7 @@
 		<div class="player-queue"></div>
 
 	</div>
-	
+
 
 </body>
-</html>
+</html> -->

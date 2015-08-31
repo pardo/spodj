@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-
+		<link href="/css/player.css" rel="stylesheet">
 
     <script type="text/javascript" src="/js/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="/js/nunjucks.min.js"></script>
@@ -33,7 +33,7 @@
 			position: absolute;
 			bottom: 0;
 			left: 0;
-			height: 15vh;
+			height: 21vh;
 			background: rgba(0,0,0,0.5);
 			width: 100%;
 			font-size: 6vh;
@@ -45,7 +45,7 @@
 		.time {
 			position: absolute;
 			right: 0;
-			bottom: 0;
+			bottom: 35px;
 		}
 		.artist,
 		.title {
@@ -57,11 +57,12 @@
 	</style>
 	<script type="text/template" id="player-template">
 		<div class="song-bg" style="background-image: url( {{ track.album.images[0].url }} )"></div>
-		
+
 		<div class="song-data">
-			<div class="title">{{ track.name }}</div>		
+			<div class="title">{{ track.name }}</div>
 			<div class="artist">{{ track.artists[0].name }}</div>
 			<div class="time"><span></span> - {{ track.duration_ms | msToSec }}</div>
+			<progress value="10" max="{{ track.duration_ms }}"></progress>
 		</div>
 	</script>
 	<script type="text/javascript" src="/js/player-only.js"></script>
@@ -69,7 +70,7 @@
   </head>
   <body>
    	<div class="player-widget">
-   		
+
    	</div>
   </body>
 </html>

@@ -2,7 +2,7 @@ $(function(){
 
 	var template = nunjucks.configure();
 	Filters = {
-		msToSec: function(ms){  	
+		msToSec: function(ms){
 	  		ms = parseInt(ms/1000);
 			return parseInt(ms/60)+":"+(("000"+ms%60).slice(-2));
 		},
@@ -13,17 +13,17 @@ $(function(){
 
 	for ( k in Filters ) {
 		template.addFilter(k, Filters[k]);
-	}	
+	}
 
 	PlayerWidget = (function(){
 		var that = this;
 		this.$el = $(".player-widget");
-		
+
 		this.currentTrack = null;
 		this.currentTrackUri = null;
 		this.timePlayed = 0;
-		this.playerTemplate = $("#player-template").html();		
-		
+		this.playerTemplate = $("#player-template").html();
+
 		this.getTracks = function(ids){
 			if (ids == null || ids.length == 0) {
 				var d = $.Deferred();
@@ -31,7 +31,7 @@ $(function(){
 				return d;
 			}
 
-			return $.ajax({ 
+			return $.ajax({
 				url: "https://api.spotify.com/v1/tracks",
 				data: {
 					"ids": ids.join(",")
@@ -40,7 +40,7 @@ $(function(){
 		};
 
 		this.syncCurrentTrack = function(){
-			var d = $.Deferred();			
+			var d = $.Deferred();
 			$.ajax({
 				url: "/track/"
 			}).done(function(data){
@@ -48,7 +48,7 @@ $(function(){
 					d.reject();
 				} else {
 					that.syncCurrentTrackUri(data.uri).then(d.resolve, d.reject);
-				}				
+				}
 			});
 			return d;
 		};
@@ -62,7 +62,7 @@ $(function(){
 				d.resolve(that.currentTrack);
 			});
 			return d;
-		};	
+		};
 
 		this.uriToId = function(uri){
 			return uri.split(":")[2];
@@ -70,7 +70,7 @@ $(function(){
 
 		this.renderPlayer = function(){
 			this.$el.html(template.renderString(this.playerTemplate,{
-				track: this.currentTrack				
+				track: this.currentTrack
 			}));
 		};
 
@@ -97,7 +97,7 @@ $(function(){
         }
 
         if (io) {
-		  	var socket = io.connect(window.location.origin);		  	
+		  	var socket = io.connect(window.location.origin);
 		  	socket.on('player.play', function (data) {
 		  		that.syncCurrentTrackUri(data.uri).done(function(track){
 	                that.renderPlayer();
@@ -107,6 +107,7 @@ $(function(){
 		  	socket.on('player.time', function (data) {
 		  		if (!that.currentTrack) { return }
 	  			$(".time span").html(Filters.msToSec(data.timePlayed));
+	  			$("progress").attr('value', data.timePlayed);
 		  	});
         }
 
@@ -120,6 +121,6 @@ $(function(){
         firstTimeSync();
 
 		return this;
-	})();	
+	})();
 
 });
