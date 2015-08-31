@@ -179,6 +179,7 @@ $(function(){
                 idsSlice = ids.splice(0,20);
             }
             var d = $.Deferred();
+            if (promises.length == 1) { return promises[0] }
             $.when.apply($, promises).done(function(){
                 for( var i=0; i < arguments.length; i++) {
                     response.tracks.push.apply(response.tracks, arguments[i][0].tracks);
