@@ -173,7 +173,7 @@ $(function(){
                 promises.push($.ajax({
                     url: "https://api.spotify.com/v1/tracks",
                     data: {
-                        "ids": ids.join(",")
+                        "ids": idsSlice
                     }
                 }));
                 idsSlice = ids.splice(0,20);
