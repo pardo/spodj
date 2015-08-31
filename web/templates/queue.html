@@ -1,7 +1,7 @@
 {% for track in tracks %}
 	{% if track.uri == currentTrack.uri %}
-		<div>[[ {{ track.name }} - {{ track.album.name }} - {{ track.artists[0].name }} - {{ track.duration_ms | msToSec }} ]]</div>
+		<li class="current"> {{ track.name }} - {{ track.album.name }} - {{ track.artists[0].name }} - {{ track.duration_ms | msToSec }} </li>
 	{% else %}
-		<div>{{ track.name }} - {{ track.album.name }} - {{ track.artists[0].name }} - {{ track.duration_ms | msToSec }}</div>
+		<li>{{ track.name }} - {{ track.album.name }} - {{ track.artists[0].name }} - {{ track.duration_ms | msToSec }}</li>
 	{% endif%}
 {% endfor %}

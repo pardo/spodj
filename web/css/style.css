@@ -5,15 +5,55 @@ body{
 a,a:hover{
 	color:#EC1227;
 }
+.app-widget{
+	margin-bottom: 100px;
+}
 .search_box{
 	background: #EC1227;
 	width:100%;
 	padding: 10px;
-	color:#fff;
+	/*color:#fff;*/
 }
 .search_box input, .search_box .start-search{
 	display: inline-block;
 }
+.search_box input{
+	min-width: 300px;
+  border: none;
+  line-height: 1.7em;
+  border-radius: 50px;
+  padding: 0 15px;
+}
 .search_box .start-search{
+ 	font-size: 18px;
+  position: absolute;
+  top: 15px;
+  left: 314px;
+}
+.player{
+  width: 100%;
+  background-color: #EC1227;
+  color:#fff;
+	position: fixed;
+  bottom: 0;
+  padding: 15px;
+}
+.player a{
+	color:#fff;
+	font-size: 30px;
+	text-decoration: none;
+}
+.player-queue{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.player-queue li{
+	padding: 5px;
+	font-size: 15px;
 
+}
+.player-queue li.current{
+	background: #747288;
+	color:#fff;
 }

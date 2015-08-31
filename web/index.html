@@ -8,6 +8,7 @@
     <title>SpoDJ</title>
     <link href="/css/normalize.css" rel="stylesheet">
 
+    <link href="/css/icons.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
 
     <script type="text/javascript" src="/js/jquery-2.1.4.min.js"></script>
@@ -19,8 +20,7 @@
 <body>
   <div class="app-widget">
   	<div class="search_box">
-			<input type="search" name="search"> <div class="start-search">Search</div>
-
+			<input type="search" name="search" placeholder="Buscar por artista, álbum o canción"> <div class="start-search"><i class="icon-search"></i></div>
   	</div>
 
 		<div class="album-results"></div>
@@ -30,18 +30,15 @@
 		<div class="search-results"></div>
 
 		<h3>Player Queue</h3>
-        <div class="player">
-		    <a href="#" data-player-pause>Pause</i></a>
-		    <a href="#" data-player-resume>Resume</a>
-		    <a href="#" data-player-next>Next</a>
-		    <a href="#" data-resfresh-queue>Refresh</a>
-				<progress value="10" max="150"></progress>
-            <div class="current"></div>
-
-            <hr>
-
-        </div>
-		<div class="player-queue"></div>
+    <div class="player">
+	    <a href="#" data-player-pause><i class="icon-pause"></i></i></a>
+	    <a href="#" data-player-resume><i class="icon-play-arrow"></i></a>
+	    <a href="#" data-player-next><i class="icon-skip-next"></i></a>
+	    <a href="#" data-resfresh-queue><i class="icon-replay"></i></a>
+	    <div class="current"></div>
+	    <!-- <hr> -->
+    </div>
+		<ul class="player-queue"></ul>
 
 	</div>
 </body>
