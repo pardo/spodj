@@ -25,9 +25,14 @@ body {
   background: @light;
 }
 #header{
+  width: 100%;
   padding: 10px;
   background: @primary;
-  height: 7vh;
+  height: 60px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index:1;
 }
 .dark_bg{
   background: @dark;
@@ -78,7 +83,10 @@ body {
 /* Playlist Column */
 .playlist{
   width:250px;
-  height: 93vh;
+  height: ~'calc(100vh - 60px)';
+  position: fixed;
+  top: 60px;
+  left: 0;
   float: left;
   padding: 10px;
 }
@@ -86,9 +94,12 @@ body {
 /* Queue Column */
 .play-qeue{
   width:300px;
-  height: 93vh;
+  height: ~'calc(100vh - 60px)';
   float: right;
   padding: 0;
+  position: fixed;
+  top: 60px;
+  right: 0;
   .playing-now{
     width:100%;
     position: relative;
