@@ -164,12 +164,29 @@ $(function(){
 				return d;
 			}
 
-			return $.ajax({ 
-				url: "https://api.spotify.com/v1/tracks",
-				data: {
-					"ids": ids.join(",")
-				}
-			});
+            var idsSlice = ids.splice(0,20);
+            var promises = [];
+            var response = {
+                tracks: []
+            };
+            while (idsSlice.length > 0) {
+                promises.push($.ajax({
+                    url: "https://api.spotify.com/v1/tracks",
+                    data: {
+                        "ids": ids.join(",")
+                    }
+                }));
+                idsSlice = ids.splice(0,20);
+            }
+            var d = $.Deferred();
+            $.when.apply($, promises).done(function(){
+                for( var i=0; i < arguments.length; i++) {
+                    response.tracks.push.apply(response.tracks, arguments[0].tracks);
+                }
+                d.resolve(response);
+            });
+            return d
+
 		};
 
 

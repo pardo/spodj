@@ -22,7 +22,6 @@ var username = login.username;
 var password = login.password;
 
 
-
 throttle = function (func, wait, options) {
     var context, args, result;
     var timeout = null;
