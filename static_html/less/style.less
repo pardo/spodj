@@ -2,6 +2,7 @@
 @import "font.less";
 @import "variables.less";
 
+.clearfix(){   zoom: 1;  &:before, &:after {     content: "";     display: table;   }   &:after {     clear:both;   } }
 a, a:hover{
   text-decoration: none;
 }
@@ -9,7 +10,14 @@ a, a:hover{
   font-family: 'sen', "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: 400;
 }
-
+.bold(){
+  font-family: 'sen', "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 700;
+}
+ul{
+  padding: 0;
+  margin: 0;
+}
 body {
   .regular();
   font-size: 14px;
@@ -19,6 +27,7 @@ body {
 #header{
   padding: 10px;
   background: @primary;
+  height: 7vh;
 }
 .dark_bg{
   background: @dark;
@@ -69,6 +78,7 @@ body {
 /* Playlist Column */
 .playlist{
   width:250px;
+  height: 93vh;
   float: left;
   padding: 10px;
 }
@@ -76,9 +86,10 @@ body {
 /* Queue Column */
 .play-qeue{
   width:300px;
+  height: 93vh;
   float: right;
   padding: 0;
-  .playing-now{    
+  .playing-now{
     width:100%;
     position: relative;
     img{
@@ -88,8 +99,24 @@ body {
       position: absolute;
       bottom:0;
       left: 0;
-      p{
-        padding: 0 10px;
+      margin: 5px;
+    }
+  }
+  p{
+    margin: 0;
+    padding: 0 10px;
+  }
+  .song{
+    .bold();
+  }
+  .duration{
+    float: right;
+  }
+  .qeue{
+    ul{
+      li{
+        border-bottom: 1px solid darken(@dark, 5%);
+        padding: 5px 0;
       }
     }
   }
@@ -99,4 +126,39 @@ body {
 .search-result{
   margin: 0 300px 0 250px;
   padding: 15px;
+}
+.artist_result_tiles{
+  .clearfix();
+  .tile{
+    max-width: 150px;
+    float: left;
+    margin: 0 10px 10px 0;
+    img{
+      max-width: 100%;
+    }
+  }
+}
+.album_result_tiles{
+  &:extend(.artist_result_tiles all);
+}
+.songs_result_list{
+  padding: 0;
+  margin: 0;
+  list-style:none;
+  li{
+    padding: 5px;
+    font-size: 16px;
+    i{
+      font-size: 25px;
+      vertical-align: -5px;
+      margin-right: 5px;
+    }
+    .duration{
+      float: right;
+    }
+    &:hover{
+      background: lighten(@dark, 35%);
+      color:@light;
+    }
+  }
 }

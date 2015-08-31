@@ -23,6 +23,10 @@ a,
 a:hover {
   text-decoration: none;
 }
+ul {
+  padding: 0;
+  margin: 0;
+}
 body {
   font-family: 'sen', "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: 400;
@@ -33,6 +37,7 @@ body {
 #header {
   padding: 10px;
   background: #ca2a2a;
+  height: 7vh;
 }
 .dark_bg {
   background: #262f39;
@@ -80,12 +85,14 @@ body {
 /* Playlist Column */
 .playlist {
   width: 250px;
+  height: 93vh;
   float: left;
   padding: 10px;
 }
 /* Queue Column */
 .play-qeue {
   width: 300px;
+  height: 93vh;
   float: right;
   padding: 0;
 }
@@ -100,12 +107,71 @@ body {
   position: absolute;
   bottom: 0;
   left: 0;
+  margin: 5px;
 }
-.play-qeue .playing-now .info p {
+.play-qeue p {
+  margin: 0;
   padding: 0 10px;
+}
+.play-qeue .song {
+  font-family: 'sen', "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 700;
+}
+.play-qeue .duration {
+  float: right;
+}
+.play-qeue .qeue ul li {
+  border-bottom: 1px solid #1c222a;
+  padding: 5px 0;
 }
 /* Search Column */
 .search-result {
   margin: 0 300px 0 250px;
   padding: 15px;
+}
+.artist_result_tiles,
+.album_result_tiles {
+  zoom: 1;
+}
+.artist_result_tiles:before,
+.artist_result_tiles:after,
+.album_result_tiles:before,
+.album_result_tiles:after {
+  content: "";
+  display: table;
+}
+.artist_result_tiles:after,
+.album_result_tiles:after {
+  clear: both;
+}
+.artist_result_tiles .tile,
+.album_result_tiles .tile {
+  max-width: 150px;
+  float: left;
+  margin: 0 10px 10px 0;
+}
+.artist_result_tiles .tile img,
+.album_result_tiles .tile img {
+  max-width: 100%;
+}
+.songs_result_list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.songs_result_list li {
+  padding: 5px;
+  font-size: 16px;
+}
+.songs_result_list li i {
+  font-size: 25px;
+  vertical-align: -5px;
+  margin-right: 5px;
+}
+.songs_result_list li .duration {
+  float: right;
+}
+.songs_result_list li:hover {
+  background: #7188a0;
+  color: #e8dfdf;
 }
