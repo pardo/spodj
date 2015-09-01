@@ -109,11 +109,10 @@ $(function(){
 		this.$refreshQueueBtn = $('[data-resfresh-queue]');
 
 		this.$playerQueue = $('[player-queue-el]');
-		this.$playerNow = $('.playing-now');
+		this.$playerNow = $('[playing-now-el]');
 
 		this.$playBtn = $("[play-btn-el]");
-		this.$pauseBtn = $("[pause-btn-el]");
-		
+		this.$pauseBtn = $("[pause-btn-el]");		
 
 		this.cachedQueueTracks = [];
 		this.currentTrack = null;
@@ -196,7 +195,6 @@ $(function(){
 
 		};
 
-
 		this.getArtist = function(artistId) {
 			return $.ajax({ 
 				url: "https://api.spotify.com/v1/artists/"+artistId
@@ -230,9 +228,7 @@ $(function(){
 					"market": "AR"
 				}
 			});
-		};
-
-		 
+		};		 
 
 		this.getArtistAndAlbums = function(artistId) {			
 			var d = $.Deferred();

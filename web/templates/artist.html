@@ -2,7 +2,7 @@
 <h3>{{ artist.name }}</h3>
 
 {% for album in albums|sort(attribute='release_date') %}
-	<h4>{{ album.name }}  {{ album.release_date | albumDate }}</h4>
+	<h4>{{ album.name }} {{ album.release_date | albumDate }}</h4>
 	<img src="{{ album.images[1].url }}" />
 	<div class="tracks">
 		<div data-album-uri="{{ album.uri }}">ADD ALL</div>

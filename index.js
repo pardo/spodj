@@ -2,6 +2,7 @@ var http = require('http');
 var express = require('express');
 var bodyParser = require('body-parser');
 var playlistRoutes = require('./routes/playlist.js');
+var lyricSearch = require("./lyric_search");
 
 var app = express();
 app.set('port', 9000);
