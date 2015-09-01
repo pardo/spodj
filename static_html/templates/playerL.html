@@ -27,9 +27,10 @@
           <div class="col-sm-6">
             <div class="player">
               <div class="controls main">
-                <a href="" class="prev"><i class="icon-skip-previous"></i></a>
-                <a href="" class="play"><i class="icon-play-arrow circle"></i></a>
-                <a href="" class="next"><i class="icon-skip-next"></i></a>
+                <a href="" class="prev"><i data-player-prev class="icon-skip-previous"></i></a>
+                <a pause-btn-el href="" class="pause"><i data-player-pause class="icon-pause circle"></i></a>
+                <a play-btn-el href="" class="play"><i data-player-play class="icon-play-arrow circle"></i></a>
+                <a href="" class="next"><i data-player-next class="icon-skip-next"></i></a>
               </div>
 
               <div class="controls volume">
@@ -44,7 +45,9 @@
       </div>
     </div>
       <div class="playlist dark_bg">
-        <h3>playlist</h3>
+        <h3>playlists</h3>
+        <div playlists-el class="plalists-wrap">
+        </div>
       </div>
       <div class="play-qeue dark_bg">
         
@@ -52,12 +55,18 @@
           
         </div>
 
-        <div class="player-queue qeue">
+        <div player-queue-el class="qeue">
            
          </div>
       </div>
       
-      <div class="search-result">
+      <div album-results-el class="search-result">
+      </div>
+
+      <div artist-results-el class="search-result">
+      </div>
+
+      <div search-results-el class="search-result">
       </div>
 
     <!-- jQuery first, then Bootstrap JS. -->

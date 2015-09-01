@@ -102,15 +102,17 @@ $(function(){
 		this.$input = $("#search input");
 		this.$searchForm = $("#search form");
 		
-		this.$results = $(".search-result");
-		this.$albumResults = $(".album-results");
-		this.$artistResults = $(".artist-results");
+		this.$results = $("[search-results-el]");
+		this.$albumResults = $("[album-results-el]");
+		this.$artistResults = $("[artist-results-el]");
 		
 		this.$refreshQueueBtn = $('[data-resfresh-queue]');
-		this.$playerQueue = $('.player-queue');
+
+		this.$playerQueue = $('[player-queue-el]');
 		this.$playerNow = $('.playing-now');
 
-
+		this.$playBtn = $("[play-btn-el]");
+		this.$pauseBtn = $("[pause-btn-el]");
 		
 
 		this.cachedQueueTracks = [];
@@ -261,6 +263,12 @@ $(function(){
 			});			
 		};
 
+		this.hideMainContent = function() {
+			this.$results.hide();
+			this.$artistResults.hide();
+			this.$albumResults.hide();
+		};
+
 		this.search = function(query){
 			this.apiSearch(query).done(function(response){
 				response.albums.items = response.albums.items.filter(function(d){
@@ -279,9 +287,40 @@ $(function(){
 					function(err, res) {
 						if (err) throw err;
 						that.$results.html(res);
+						that.hideMainContent();
+						that.$results.show();
 					}
 				);	
 			});			
+		};
+
+		this.showArtist = function(artistId) {
+			this.getArtistAndAlbums(artistId).done(function(artist, albums){
+				template.render('search_artist.html', {
+					albums: albums.albums,
+					artist: artist
+				},
+				function(err, res) {
+					if (err) throw err;
+					that.$artistResults.html(res);
+					that.hideMainContent();
+					that.$artistResults.show();
+				});
+			});
+		};
+
+		this.showAlbum = function(albumId) {
+			this.getAlbum(albumId).done(function(r){
+				template.render('search_album.html', {
+					album: r
+				},
+				function(err, res) {
+					if (err) throw err;
+					that.$albumResults.html(res);
+					that.hideMainContent();
+					that.$albumResults.show();
+				});
+			});
 		};
 
 		this.queueAlbumUri = function(uri){
@@ -365,7 +404,18 @@ $(function(){
 				p.tracks = r;
 				p.save();
 			});
-		};		
+		};
+
+		this.renderPlaylists = function() {
+			Playlist.all().done(function(playlists){
+				template.render("playlists.html", {
+					playlists: playlists
+				}, function(err, res) {
+					$("[playlists-el]").html(res)
+				});
+				
+			});
+		}
 		
 		this.$el.on("click", '[data-track-uri]', function(){
 			that.queueTrackUri($(this).data("track-uri"));
@@ -410,6 +460,12 @@ $(function(){
             $.ajax({ url: "/next/", type: "post" });
         });
 
+        $("[data-player-prev]").click(function(e){
+            e.preventDefault();
+            $.ajax({ url: "/prev/", type: "post" });
+        });
+        
+
 
         try{
         	io;
@@ -433,7 +489,21 @@ $(function(){
 
 			socket.on('queue.removed', function(){ that.refreshQueue() });
 			socket.on('queue.added', function(){ that.refreshQueue() });        	
+			socket.on('player.pause', function(){
+				that.$pauseBtn.hide();
+				that.$playBtn.show();
+			});
+
+			socket.on('player.resume', function(){
+				that.$playBtn.hide();
+				that.$pauseBtn.show();
+			});
         }
+
+        // init
+
+        that.$playBtn.hide();
+		that.$pauseBtn.show();
 
 		function firstTimeSync(){
         	that.syncCurrentTrack().fail(function(){
@@ -442,9 +512,11 @@ $(function(){
                 that.renderPlayingNow();
             });
         }
+
         firstTimeSync();
-        
+
         this.refreshQueue();
+        this.renderPlaylists();
 
 		//PATHs
 		return this;
@@ -455,28 +527,11 @@ $(function(){
 	});
 
 	page('/album/:albumId', function(context){
-		AppWidget.getAlbum(context.params.albumId).done(function(r){
-			template.render('album.html', {
-				album: r
-			},
-			function(err, res) {
-				if (err) throw err;
-				AppWidget.$albumResults.html(res);
-			});
-		});
+		AppWidget.showAlbum(context.params.albumId);		
 	});
 
 	page('/artist/:artistId', function(context){
-		AppWidget.getArtistAndAlbums(context.params.artistId).done(function(artist, albums){
-			template.render('artist.html', {
-				albums: albums.albums,
-				artist: artist
-			},
-			function(err, res) {
-				if (err) throw err;
-				AppWidget.$artistResults.html(res);
-			});
-		});
+		AppWidget.showArtist(context.params.artistId);		
 	});
 	
 	page();

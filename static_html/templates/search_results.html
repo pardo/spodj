@@ -13,7 +13,7 @@
     <div class="album_result_tiles">
       <h3>Albums</h3>
       {% for album in albums.items %}
-  		<div class="tile">
+  		<div class="tile" data-album-id="{{ album.id }}">
 			<img src="{{ album.images[1].url }}" />
 			<p class="name">{{ album.name }}</p>
 		</div>

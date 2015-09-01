@@ -1,0 +1,5 @@
+<ul>
+  {% for playlist in playlists %}
+  <li> {{ playlist.name }}({{ playlist.tracks | length }})</li>
+  {% endfor %}
+</ul>
