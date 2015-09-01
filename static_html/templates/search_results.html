@@ -1,0 +1,35 @@
+<p>Resultados de la busqueda</p>
+<div class="row">
+  <div class="col-md-6">
+    <div class="artist_result_tiles">
+      <h3>Artistas</h3>
+      {% for artist in artists.items %}
+  		<div class="tile" data-artist-id="{{ artist.id }}">
+			<img src="{{ artist.images[0].url }}" />
+			<p class="name">{{ artist.name }}</p>
+		</div>
+	  {% endfor %}
+    </div>
+    <div class="album_result_tiles">
+      <h3>Albums</h3>
+      {% for album in albums.items %}
+  		<div class="tile">
+			<img src="{{ album.images[1].url }}" />
+			<p class="name">{{ album.name }}</p>
+		</div>
+	  {% endfor %}
+    </div>
+  </div>
+  <div class="col-md-6">
+    <h3>Canciones</h3>
+    <ul class="songs_result_list">
+      {% for track in tracks.items %}
+  		<li data-track-uri="{{ track.uri }}" data-track-id="{{ track.id }}">
+			<span class="duration">{{ track.duration_ms | msToSec }}</span>
+			<i class="icon-add"></i>
+			<span>{{ track.name }} - {{ track.artists[0].name }}</span>
+		</li>
+	  {% endfor %}
+    </ul>
+  </div>
+</div>

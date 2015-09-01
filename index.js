@@ -5,7 +5,8 @@ var playlistRoutes = require('./routes/playlist.js');
 
 var app = express();
 app.set('port', 9000);
-app.use(express.static('web'));
+//app.use(express.static('web'));
+app.use(express.static('static_html'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 
@@ -150,6 +151,7 @@ SpotifyPlayer = (function(){
 
   this._syncTimePlayer = function(){
     io.emit("player.time", {
+      uri: that.currentTrack,
       timePlayed: that.trackTimePlayed
     });
   };
@@ -299,8 +301,13 @@ app.get('/player/', function(req, res){
   res.sendFile(__dirname + '/web/player.html');
 });
 
+app.get('/', function(req, res){  
+  res.sendFile(__dirname + '/static_html/templates/playerL.html');
+});
+
+
 app.get(/\/.*/, function(req, res){
-  res.sendFile(__dirname + '/web/index.html');
+  res.sendFile(__dirname + '/static_html/templates/playerL.html');
 });
 
 var server = http.createServer(app);

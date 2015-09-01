@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags always come first -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+  </head>
+  <body class="app-widget">
+    <div id="header">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-6">
+            <div id="search" class="pull-right">
+              <form action="">
+                <input type="search" name="main-search" placeholder="Search for Song, Album or Artist">
+                <span class="search-icon"><i class="icon-search"></i></span>
+              </form>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="player">
+              <div class="controls main">
+                <a href="" class="prev"><i class="icon-skip-previous"></i></a>
+                <a href="" class="play"><i class="icon-play-arrow circle"></i></a>
+                <a href="" class="next"><i class="icon-skip-next"></i></a>
+              </div>
+
+              <div class="controls volume">
+                <div class="form-group">
+                    <label for="volume"><i class="icon-volume-up"></i></label>
+                    <!-- <input type="range" class="form-control" id="volume"> -->
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="playlist dark_bg">
+        <h3>playlist</h3>
+      </div>
+      <div class="play-qeue dark_bg">
+        
+        <div class="playing-now">
+          
+        </div>
+
+        <div class="player-queue qeue">
+           
+         </div>
+      </div>
+      
+      <div class="search-result">
+      </div>
+
+    <!-- jQuery first, then Bootstrap JS. -->
+    <script src="/js/lib/jquery-2.1.4.min.js"></script>
+    <script src="/js/lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/lib/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="/js/lib/nunjucks.min.js"></script>
+    <script type="text/javascript" src="/js/lib/page.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
+  </body>
+</html>
