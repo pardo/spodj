@@ -125,6 +125,13 @@ body {
   }
   .qeue{
     ul{
+      list-style: none;
+      max-height:~'calc(100vh - 360px)';
+      &::-webkit-scrollbar {
+          width: 0;
+          height: 0;
+      }
+      overflow-y: scroll;
       li{
         border-bottom: 1px solid darken(@dark, 5%);
         padding: 5px 0;
@@ -133,19 +140,34 @@ body {
   }
 }
 /* Search Column */
-
+.main_content{
+  height:~100vh;
+  overflow-y: scroll;
+}
 .search-result{
-  margin: 0 300px 0 250px;
+  margin: 60px 300px 0 250px;
   padding: 15px;
 }
 .artist_result_tiles{
   .clearfix();
   .tile{
     max-width: 150px;
+    max-height: 200px;
     float: left;
     margin: 0 10px 10px 0;
+    .cover{
+      width: 150px;
+      height:150px;
+      background-color: @dark;
+      background-size: cover;
+    }
     img{
       max-width: 100%;
+    }
+    p{
+      height: 43px;
+      overflow: hidden;
+      margin: 5px 0;
     }
   }
 }
