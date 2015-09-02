@@ -3,8 +3,10 @@
 @import "variables.less";
 
 .clearfix(){   zoom: 1;  &:before, &:after {     content: "";     display: table;   }   &:after {     clear:both;   } }
-a, a:hover{
+
+a, a:hover, a:visited, a:focus{
   text-decoration: none;
+  outline: none;
 }
 .regular(){
   font-family: 'sen', "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -13,6 +15,9 @@ a, a:hover{
 .bold(){
   font-family: 'sen', "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: 700;
+}
+*:focus{
+  outline: none;
 }
 ul{
   padding: 0;
@@ -55,8 +60,8 @@ body {
   }
 }
 .controls{
-  float: left;
   &.main{
+    float: left;
     i{
       font-size: 30px;
       color:@light;
@@ -67,6 +72,20 @@ body {
       background: @dark;
       border-radius: 50px;
       padding: 5px;
+      &:hover{
+        background: lighten(@dark, 10%);
+      }
+    }
+  }
+  &.track{
+    margin: 0 65px 0 110px;
+    padding: 18px 10px 0 10px;
+    .progress{
+      height: 5px;
+      .progress-bar{
+        background-color: @dark;
+       transition:none;
+      }
     }
   }
   &.volume{
@@ -101,16 +120,40 @@ body {
   top: 60px;
   right: 0;
   .playing-now{
+    background: #000;
     width:100%;
     position: relative;
     img{
       max-width: 100%;
+      opacity: .8;
     }
     .info{
+      width: 100%;
+      background: fade(@dark, 80%);
+      /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#7db9e8+0,000000+100&amp;0+0,1+100 */
+      background: -moz-linear-gradient(top,  rgba(0,0,0,0) 0%,  @dark 100%); /* FF3.6+ */
+      background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(100%, @dark)); /* Chrome,Safari4+ */
+      background: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%, @dark 100%); /* Chrome10+,Safari5.1+ */
+      background: -o-linear-gradient(top,  rgba(0,0,0,0) 0%, @dark 100%); /* Opera 11.10+ */
+      background: -ms-linear-gradient(top,  rgba(0,0,0,0) 0%, @dark 100%); /* IE10+ */
+      background: linear-gradient(to bottom,  rgba(0,0,0,0) 0%, @dark 100%); /* W3C */
+      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#007db9e8', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+
+      padding: 35px 0 5px;
       position: absolute;
-      bottom:0;
+      bottom:5px;
       left: 0;
-      margin: 5px;
+      margin: 0;
+    }
+    .progress{
+      height: 5px;
+      .border-radius();
+      .progress-bar{
+        background: @primary;
+        -webkit-transition: none;
+        -moz-transition: none;
+        transition: none;
+      }
     }
   }
   p{
@@ -119,6 +162,7 @@ body {
   }
   .song{
     .bold();
+    font-size: 16px;
   }
   .duration{
     float: right;
@@ -126,7 +170,7 @@ body {
   .qeue{
     ul{
       list-style: none;
-      max-height:~'calc(100vh - 360px)';
+      max-height:~'calc(100vh - 385px)';
       &::-webkit-scrollbar {
           width: 0;
           height: 0;
@@ -141,7 +185,7 @@ body {
 }
 /* Search Column */
 .main_content{
-  height:~100vh;
+  height:100vh;
   overflow-y: scroll;
 }
 .search-result{

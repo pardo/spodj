@@ -1,7 +1,7 @@
 $(function(){
-	var template = nunjucks.configure('/templates');	
+	var template = nunjucks.configure('/templates');
 	Filters = {
-		msToSec: function(ms){  	
+		msToSec: function(ms){
 	  		ms = parseInt(ms/1000);
 			return parseInt(ms/60)+":"+(("000"+ms%60).slice(-2));
 		},
@@ -19,15 +19,15 @@ $(function(){
 		var that = this;
 
 		//for the moment this object duplicates funtions method
-		
-		this.setDoc = function(doc) {							
+
+		this.setDoc = function(doc) {
 			this._id = doc._id;
 			this.name = doc.name;
-			this.tracks = doc.tracks;			
+			this.tracks = doc.tracks;
 		};
 
 		this.getDoc = function() {
-			return {				
+			return {
 				name: this.name,
 				tracks: this.tracks
 			}
@@ -70,7 +70,7 @@ $(function(){
 		}
 		return this;
 	};
-	
+
 	Playlist.all = function(){
 		var d = $.Deferred();
 		$.ajax({ url: "/playlist/" }).done(function(r){
@@ -86,14 +86,14 @@ $(function(){
 	Playlist.get = function(id){
 		var d = $.Deferred();
 		$.ajax({
-			url: "/playlist/"+id+"/"			
+			url: "/playlist/"+id+"/"
 		}).done(function(doc){
 			var p = new Playlist();
 			p.setDoc(doc);
 			d.resolve(p);
 		});
 		return d
-	};	
+	};
 
 
 	AppWidget = (function(){
@@ -101,25 +101,25 @@ $(function(){
 		this.$el = $(".app-widget");
 		this.$input = $("#search input");
 		this.$searchForm = $("#search form");
-		
+
 		this.$results = $("[search-results-el]");
 		this.$albumResults = $("[album-results-el]");
 		this.$artistResults = $("[artist-results-el]");
-		
+
 		this.$refreshQueueBtn = $('[data-resfresh-queue]');
 
 		this.$playerQueue = $('[player-queue-el]');
 		this.$playerNow = $('[playing-now-el]');
 
 		this.$playBtn = $("[play-btn-el]");
-		this.$pauseBtn = $("[pause-btn-el]");		
+		this.$pauseBtn = $("[pause-btn-el]");
 
 		this.cachedQueueTracks = [];
 		this.currentTrack = null;
 		this.currentTrackUri = null;
-		
+
 		this.syncCurrentTrack = function(){
-			var d = $.Deferred();			
+			var d = $.Deferred();
 			$.ajax({
 				url: "/track/"
 			}).done(function(data){
@@ -127,7 +127,7 @@ $(function(){
 					d.reject();
 				} else {
 					that.syncCurrentTrackUri(data.uri).then(d.resolve, d.reject);
-				}				
+				}
 			});
 			return d;
 		};
@@ -141,25 +141,25 @@ $(function(){
 				d.resolve(that.currentTrack);
 			});
 			return d;
-		};	
+		};
 
 		this.uriToId = function(uri){
 			return uri.split(":")[2];
 		};
 
 		this.getAlbum = function(id){
-			return $.ajax({ 
+			return $.ajax({
 				url: "https://api.spotify.com/v1/albums/"+id
 			});
 		};
 
 		this.getAlbumTracks = function(id){
-			return $.ajax({ 
+			return $.ajax({
 				url: "https://api.spotify.com/v1/albums/"+id+"/tracks",
 				data: {
 					"ids": ids.join(",")
 				}
-			});			
+			});
 		};
 
 		this.getTracks = function(ids){
@@ -196,22 +196,22 @@ $(function(){
 		};
 
 		this.getArtist = function(artistId) {
-			return $.ajax({ 
+			return $.ajax({
 				url: "https://api.spotify.com/v1/artists/"+artistId
-			});			
+			});
 		};
 
 		this.getArtistAlbums = function(artistId, offset) {
 			offset = offset || 0;
-			return $.ajax({ 
+			return $.ajax({
 				url: "https://api.spotify.com/v1/artists/"+artistId+"/albums",
 				data: {
 					"album_type": "album,compilation",
 					"limit": "50",
 					"market": "AR",
-					"offset": offset					
+					"offset": offset
 				}
-			});			
+			});
 		};
 
 		this.getAlbums = function(ids) {
@@ -221,16 +221,16 @@ $(function(){
 				return d;
 			}
 
-			return $.ajax({ 
+			return $.ajax({
 				url: "https://api.spotify.com/v1/albums",
 				data: {
 					"ids": ids.join(","),
 					"market": "AR"
 				}
 			});
-		};		 
+		};
 
-		this.getArtistAndAlbums = function(artistId) {			
+		this.getArtistAndAlbums = function(artistId) {
 			var d = $.Deferred();
 			$.when(
 				this.getArtist(artistId),
@@ -247,7 +247,7 @@ $(function(){
 
 		this.apiSearch = function(query, offset) {
 			offset = offset || 0;
-			return $.ajax({ 
+			return $.ajax({
 				url: "https://api.spotify.com/v1/search",
 				data: {
 					"type": "album,artist,track",
@@ -256,7 +256,7 @@ $(function(){
 					"offset": offset,
 					"q": query
 				}
-			});			
+			});
 		};
 
 		this.hideMainContent = function() {
@@ -286,8 +286,8 @@ $(function(){
 						that.hideMainContent();
 						that.$results.show();
 					}
-				);	
-			});			
+				);
+			});
 		};
 
 		this.showArtist = function(artistId) {
@@ -320,7 +320,7 @@ $(function(){
 		};
 
 		this.queueAlbumUri = function(uri){
-			this.getAlbum(this.uriToId(uri)).done(function(album){				
+			this.getAlbum(this.uriToId(uri)).done(function(album){
 				for (var i = 0; i < album.tracks.items.length; i++) {
 					that.queueTrackUri(album.tracks.items[i].uri);
 				}
@@ -336,14 +336,14 @@ $(function(){
 				}
 			});
 		};
-		
 
-		this.queueTracksFromPlaylist = function(playlist){			
+
+		this.queueTracksFromPlaylist = function(playlist){
 			for (var i = 0; i < playlist.tracks.length; i++) {
 				this.queueTrackUri(playlist.tracks[i]);
-			};			
+			};
 		};
-			
+
 
 		this.getQueue = function(){
 			return $.ajax({ url: "/queue/", type: "get" })
@@ -359,7 +359,7 @@ $(function(){
 
 		this.refreshQueue = function(){
 			this.getQueueTracks().done(function(tracks){
-				that.cachedQueueTracks = tracks.tracks;				
+				that.cachedQueueTracks = tracks.tracks;
 				that.renderQueue();
 			});
 		};
@@ -377,7 +377,7 @@ $(function(){
 
 		this.renderPlayingNow = function(){
 			template.render('playing_now.html', {
-				track: that.currentTrack				
+				track: that.currentTrack
 			},
 			function(err, res) {
 				if (err) throw err;
@@ -393,7 +393,7 @@ $(function(){
 			});
 		};
 
-		this.saveQueueToNewPlaylist = function(name){			
+		this.saveQueueToNewPlaylist = function(name){
 			this.getQueue().done(function(r){
 				var p = new Playlist();
 				p.name = name;
@@ -409,10 +409,10 @@ $(function(){
 				}, function(err, res) {
 					$("[playlists-el]").html(res)
 				});
-				
+
 			});
 		}
-		
+
 		this.$el.on("click", '[data-track-uri]', function(){
 			that.queueTrackUri($(this).data("track-uri"));
 		});
@@ -434,7 +434,7 @@ $(function(){
 		this.$refreshQueueBtn.click(function(e){
 			e.preventDefault();
 			that.refreshQueue();
-		});		
+		});
 
 		this.$searchForm.submit(function(e){
 			e.preventDefault();
@@ -460,7 +460,7 @@ $(function(){
             e.preventDefault();
             $.ajax({ url: "/prev/", type: "post" });
         });
-        
+
 
 
         try{
@@ -470,9 +470,9 @@ $(function(){
         }
         if (io) {
 		  	var socket = io.connect(window.location.origin);
-		  	
+
 		  	socket.on('player.play', function (data) {
-		  		that.syncCurrentTrackUri(data.uri).done(function(track){	                
+		  		that.syncCurrentTrackUri(data.uri).done(function(track){
 	                that.renderPlayingNow();
 	                that.renderQueue();
 	            })
@@ -480,11 +480,12 @@ $(function(){
 
 		  	socket.on('player.time', function (data) {
 		  		if (!that.currentTrack) { return }
-	  			//data.timePlayed	  			
+		  			$('[played-time-el]').css('width', (data.timePlayed*100/that.currentTrack.duration_ms)+'%');
+	  			//data.timePlayed
 		  	});
 
 			socket.on('queue.removed', function(){ that.refreshQueue() });
-			socket.on('queue.added', function(){ that.refreshQueue() });        	
+			socket.on('queue.added', function(){ that.refreshQueue() });
 			socket.on('player.pause', function(){
 				that.$pauseBtn.hide();
 				that.$playBtn.show();
@@ -523,14 +524,14 @@ $(function(){
 	});
 
 	page('/album/:albumId', function(context){
-		AppWidget.showAlbum(context.params.albumId);		
+		AppWidget.showAlbum(context.params.albumId);
 	});
 
 	page('/artist/:artistId', function(context){
-		AppWidget.showArtist(context.params.artistId);		
+		AppWidget.showArtist(context.params.artistId);
 	});
-	
+
 	page();
-	
+
 
 });

@@ -20,8 +20,14 @@
   font-style: normal;
 }
 a,
-a:hover {
+a:hover,
+a:visited,
+a:focus {
   text-decoration: none;
+  outline: none;
+}
+*:focus {
+  outline: none;
 }
 ul {
   padding: 0;
@@ -64,7 +70,7 @@ body {
   top: 13px;
   right: 12px;
 }
-.controls {
+.controls.main {
   float: left;
 }
 .controls.main i {
@@ -76,6 +82,20 @@ body {
   background: #262f39;
   border-radius: 50px;
   padding: 5px;
+}
+.controls.main .circle:hover {
+  background: #3a4858;
+}
+.controls.track {
+  margin: 0 65px 0 110px;
+  padding: 18px 10px 0 10px;
+}
+.controls.track .progress {
+  height: 5px;
+}
+.controls.track .progress .progress-bar {
+  background-color: #262f39;
+  transition: none;
 }
 .controls.volume {
   float: right;
@@ -108,17 +128,52 @@ body {
   right: 0;
 }
 .play-qeue .playing-now {
+  background: #000;
   width: 100%;
   position: relative;
 }
 .play-qeue .playing-now img {
   max-width: 100%;
+  opacity: .8;
 }
 .play-qeue .playing-now .info {
+  width: 100%;
+  background: rgba(38, 47, 57, 0.8);
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#7db9e8+0,000000+100&amp;0+0,1+100 */
+  background: -moz-linear-gradient(top, rgba(0, 0, 0, 0) 0%, #262f39 100%);
+  /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(0, 0, 0, 0)), color-stop(100%, #262f39));
+  /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 0%, #262f39 100%);
+  /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, rgba(0, 0, 0, 0) 0%, #262f39 100%);
+  /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, rgba(0, 0, 0, 0) 0%, #262f39 100%);
+  /* IE10+ */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #262f39 100%);
+  /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#007db9e8', endColorstr='#000000', GradientType=0);
+  /* IE6-9 */
+  padding: 35px 0 5px;
   position: absolute;
-  bottom: 0;
+  bottom: 5px;
   left: 0;
-  margin: 5px;
+  margin: 0;
+}
+.play-qeue .playing-now .progress {
+  height: 5px;
+  -webkit-border-radius: 0;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 0;
+  -moz-background-clip: padding;
+  border-radius: 0;
+  background-clip: padding-box;
+}
+.play-qeue .playing-now .progress .progress-bar {
+  background: #ca2a2a;
+  -webkit-transition: none;
+  -moz-transition: none;
+  transition: none;
 }
 .play-qeue p {
   margin: 0;
@@ -127,13 +182,14 @@ body {
 .play-qeue .song {
   font-family: 'sen', "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: 700;
+  font-size: 16px;
 }
 .play-qeue .duration {
   float: right;
 }
 .play-qeue .qeue ul {
   list-style: none;
-  max-height: calc(100vh - 360px);
+  max-height: calc(100vh - 385px);
   overflow-y: scroll;
 }
 .play-qeue .qeue ul::-webkit-scrollbar {
@@ -146,7 +202,7 @@ body {
 }
 /* Search Column */
 .main_content {
-  height: ~100vh;
+  height: 100vh;
   overflow-y: scroll;
 }
 .search-result {
