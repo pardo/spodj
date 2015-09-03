@@ -185,9 +185,13 @@ body {
     .bold();
     font-size: 16px;
   }
-  .artist{
+  a.artist{
     padding: 0 10px;
-
+    color: @links;
+    cursor:pointer;
+    &:hover{
+      color: lighten(@links, 10%);
+    }
   }
   .duration{
     float: right;

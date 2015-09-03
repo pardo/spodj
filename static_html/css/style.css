@@ -200,8 +200,13 @@ body {
   font-weight: 700;
   font-size: 16px;
 }
-.play-qeue .artist {
+.play-qeue a.artist {
   padding: 0 10px;
+  color: #668cb7;
+  cursor: pointer;
+}
+.play-qeue a.artist:hover {
+  color: #89a6c7;
 }
 .play-qeue .duration {
   float: right;
