@@ -10,7 +10,43 @@
 @med-only: ~"only screen and (min-width: 600px) and (max-width: 992px)";
 @large-only: ~"only screen and (min-width : 993px)";
 
-
+.btn-common(){
+  color:#fff;
+  display:inline-block;
+  background:#ccc;
+  padding:10px 25px;
+  text-decoration:none;
+}
+.btn(@color){
+  .btn-common;
+  background:@color;
+  .border-radius(3px);
+  .transition(all 0.3s ease-in-out);
+  &:hover{
+    background:lighten(@color, 5%);
+    .box-shadow(none);
+  }
+   &:active{
+      background:lighten(@color, 15%);
+   }
+}
+a.btn, .btn{
+  &-default{
+    .btn(@secondary);
+  }
+  &-primary{
+    .btn(@primary);
+  }
+}
+.btn-container{
+  margin: 5px 0;
+  &.centered{
+    text-align: center;
+  }
+}
+img{
+  max-width:100%;
+}
 a, a:hover, a:visited, a:focus{
   text-decoration: none;
   outline: none;
@@ -272,5 +308,18 @@ body {
       background: lighten(@dark, 35%);
       color:@light;
     }
+  }
+}
+
+table.tracks{
+  width:100%;
+  tr{
+    &:hover{
+      background: lighten(@dark, 45%);
+      color:#fff;
+    }
+  }
+  td{
+    padding: 5px 10px;
   }
 }

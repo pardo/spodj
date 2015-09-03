@@ -19,6 +19,75 @@
   font-weight: 900;
   font-style: normal;
 }
+a.btn-default,
+.btn-default {
+  color: #fff;
+  display: inline-block;
+  background: #ccc;
+  padding: 10px 25px;
+  text-decoration: none;
+  background: #5a85ca;
+  -webkit-border-radius: 3px;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 3px;
+  -moz-background-clip: padding;
+  border-radius: 3px;
+  background-clip: padding-box;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+a.btn-default:hover,
+.btn-default:hover {
+  background: #6d93d0;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+a.btn-default:active,
+.btn-default:active {
+  background: #94b0dd;
+}
+a.btn-primary,
+.btn-primary {
+  color: #fff;
+  display: inline-block;
+  background: #ccc;
+  padding: 10px 25px;
+  text-decoration: none;
+  background: #ca2a2a;
+  -webkit-border-radius: 3px;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 3px;
+  -moz-background-clip: padding;
+  border-radius: 3px;
+  background-clip: padding-box;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+a.btn-primary:hover,
+.btn-primary:hover {
+  background: #d63838;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+a.btn-primary:active,
+.btn-primary:active {
+  background: #de6262;
+}
+.btn-container {
+  margin: 5px 0;
+}
+.btn-container.centered {
+  text-align: center;
+}
+img {
+  max-width: 100%;
+}
 a,
 a:hover,
 a:visited,
@@ -300,4 +369,14 @@ body {
 .songs_result_list li:hover {
   background: #7188a0;
   color: #e8dfdf;
+}
+table.tracks {
+  width: 100%;
+}
+table.tracks tr:hover {
+  background: #90a1b5;
+  color: #fff;
+}
+table.tracks td {
+  padding: 5px 10px;
 }
