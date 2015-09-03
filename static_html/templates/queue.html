@@ -3,7 +3,7 @@
      <li {% if track.uri == currentTrack.uri %}class="active"{% endif %}>
         <p class="duration">{{ track.duration_ms | msToSec }}</p>
         <p class="song">{{ track.name }}</p>
-        <p class="artist">{{ track.artists[0].name }}</p>
-     </li>             
+        <a href="#" class="artist" data-artist-id="{{ track.artists[0].id }}">{{ track.artists[0].name }}</a>
+     </li>
     {% endfor %}
 </ul>

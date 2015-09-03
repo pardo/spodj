@@ -117,6 +117,11 @@ body {
   float: left;
   padding: 10px;
 }
+@media only screen and (max-width : 992px) {
+  .playlist {
+    display: none;
+  }
+}
 /* Queue Column */
 .play-qeue {
   width: 300px;
@@ -128,13 +133,16 @@ body {
   right: 0;
 }
 .play-qeue .playing-now {
-  background: #000;
+  background: url('/img/non-image.jpg') no-repeat;
   width: 100%;
+  height: 305px;
   position: relative;
 }
-.play-qeue .playing-now img {
+.play-qeue .playing-now .cover {
   max-width: 100%;
-  opacity: .8;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 .play-qeue .playing-now .info {
   width: 100%;
@@ -159,9 +167,17 @@ body {
   bottom: 5px;
   left: 0;
   margin: 0;
+  text-shadow: 0px 0px 6px #000;
+}
+.play-qeue .playing-now .progress_cont {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
 }
 .play-qeue .playing-now .progress {
   height: 5px;
+  margin-bottom: 0;
   -webkit-border-radius: 0;
   -webkit-background-clip: padding-box;
   -moz-border-radius: 0;
@@ -184,6 +200,9 @@ body {
   font-weight: 700;
   font-size: 16px;
 }
+.play-qeue .artist {
+  padding: 0 10px;
+}
 .play-qeue .duration {
   float: right;
 }
@@ -202,12 +221,18 @@ body {
 }
 /* Search Column */
 .main_content {
+  background: url('/img/main-bg.png') 50% 50% no-repeat;
   height: 100vh;
   overflow-y: scroll;
 }
 .search-result {
   margin: 60px 300px 0 250px;
   padding: 15px;
+}
+@media only screen and (max-width : 992px) {
+  .search-result {
+    margin-left: 0;
+  }
 }
 .artist_result_tiles,
 .album_result_tiles {
@@ -230,6 +255,7 @@ body {
   max-height: 200px;
   float: left;
   margin: 0 10px 10px 0;
+  cursor: pointer;
 }
 .artist_result_tiles .tile .cover,
 .album_result_tiles .tile .cover {
@@ -256,6 +282,7 @@ body {
 .songs_result_list li {
   padding: 5px;
   font-size: 16px;
+  cursor: pointer;
 }
 .songs_result_list li i {
   font-size: 25px;
