@@ -276,14 +276,14 @@ body {
   }
 }
 /* Use this on the hovered element */
-.fade-in-transition(@fade-in-time: 0.5s, @fade-out-time: 0.5s, @fade-in-delay: 0.2s, @fade-out-delay: 0.2s){
+.fade-in-transition(@fade-in-time: 0.5s, @fade-out-time: 0.5s, @fade-in-delay: 0.7s, @fade-out-delay: 0.3s){
   width:35px;
   opacity: 1;
-  .transition(width @fade-in-time ,opacity @fade-in-time @fade-in-delay);
+  .transition(width @fade-in-time @fade-in-delay, opacity @fade-in-time @fade-in-delay);
 }
 
 /* Use this on the normal state */
-.fade-out-transition(@fade-in-time: 0.5s, @fade-out-time: 0.5s, @fade-in-delay: 0.5s, @fade-out-delay: 0.2s){
+.fade-out-transition(@fade-in-time: 0.5s, @fade-out-time: 0.5s, @fade-in-delay: 3s, @fade-out-delay: 0.3s){
   width: 0;
   opacity: 0;
   .transition(width @fade-out-time @fade-out-delay, opacity @fade-out-time );

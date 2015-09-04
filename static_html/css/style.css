@@ -303,10 +303,10 @@ body {
   vertical-align: middle;
   width: 0;
   opacity: 0;
-  -webkit-transition: width 0.5s 0.2s, opacity 0.5s;
-  -moz-transition: width 0.5s 0.2s, opacity 0.5s;
-  -o-transition: width 0.5s 0.2s, opacity 0.5s;
-  transition: width 0.5s 0.2s, opacity 0.5s;
+  -webkit-transition: width 0.5s 0.3s, opacity 0.5s;
+  -moz-transition: width 0.5s 0.3s, opacity 0.5s;
+  -o-transition: width 0.5s 0.3s, opacity 0.5s;
+  transition: width 0.5s 0.3s, opacity 0.5s;
 }
 .play-qeue .qeue ul li:hover {
   background: #1c222a;
@@ -314,10 +314,10 @@ body {
 .play-qeue .qeue ul li:hover a {
   width: 35px;
   opacity: 1;
-  -webkit-transition: width 0.5s, opacity 0.5s 0.2s;
-  -moz-transition: width 0.5s, opacity 0.5s 0.2s;
-  -o-transition: width 0.5s, opacity 0.5s 0.2s;
-  transition: width 0.5s, opacity 0.5s 0.2s;
+  -webkit-transition: width 0.5s 0.7s, opacity 0.5s 0.7s;
+  -moz-transition: width 0.5s 0.7s, opacity 0.5s 0.7s;
+  -o-transition: width 0.5s 0.7s, opacity 0.5s 0.7s;
+  transition: width 0.5s 0.7s, opacity 0.5s 0.7s;
 }
 .play-qeue .qeue ul li.active {
   background: #3a4858;
