@@ -19,6 +19,9 @@
   font-weight: 900;
   font-style: normal;
 }
+#search {
+  width: 100%;
+}
 a.btn-default,
 .btn-default {
   color: #fff;
@@ -292,6 +295,9 @@ body {
 .play-qeue .qeue ul li {
   border-bottom: 1px solid #1c222a;
   padding: 5px 0;
+}
+.play-qeue .qeue ul li.active {
+  background: #323232;
 }
 /* Search Column */
 .main_content {

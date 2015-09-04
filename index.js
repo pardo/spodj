@@ -1,8 +1,10 @@
 var http = require('http');
+var request = require('request');
 var express = require('express');
 var bodyParser = require('body-parser');
 var playlistRoutes = require('./routes/playlist.js');
 var lyricSearch = require("./lyric_search");
+var playlists = require("./models.js").playlists;
 
 var app = express();
 app.set('port', 9000);
@@ -216,6 +218,12 @@ TracksQueue = (function(){
         this.tracksUris.splice(this.queueIndex+1, 0, uri);
     };
 
+    this.replaceQueue = function(uriList){        
+        this.tracksUris = uriList;
+        this.queueIndex = -1;
+        io.emit("queue.replaced");
+    };
+
     this.pushTrackUri = function(uri){
         this.tracksUris.push(uri);
         io.emit("queue.added", { uri: uri });
@@ -225,6 +233,10 @@ TracksQueue = (function(){
         var index = this.tracksUris.indexOf(uri);
         if (index > -1) {
             this.tracksUris.splice(index, 1);
+            if (index<this.queueIndex) {
+              //when removing from the queue go back one if removed from behind the current track
+              this.queueIndex -= 1;
+            }
             io.emit("queue.removed", { uri: uri });
         }
     };
@@ -298,8 +310,43 @@ app.post('/resume/', function(req, res){
   res.send("OK");
 });
 
+app.get('/suggestion/', function(req, res){  
+  var q = req.query.search;  
+  request({
+    url: "https://en.wikipedia.org/w/api.php",
+    qs: {
+      action: "opensearch",
+      limit: "10",
+      namespace: 0,
+      format: "json",
+      search: q
+    }
+  }, function (error, response, body){
+    try {
+      res.send(JSON.parse(body)[1]);
+    } catch(e) {
+      console.log(e);
+      res.status(404).send('Not found');
+    }    
+  });
+});      
+
+
+
+app.post('/playlist/:id/play/', function(req, res){  
+  playlists.findOne({ _id: req.params.id }, function (err, doc) {
+    if (doc) {        
+      TracksQueue.replaceQueue(doc.tracks);
+      SpotifyPlayer.skip(true);
+      res.send("OK");
+    } else {
+      res.status(404).send('Not found');
+    }    
+  });
+});
+
 app.get('/player/', function(req, res){  
-  res.sendFile(__dirname + '/web/player.html');
+  res.sendFile(__dirname + '/static_html/templates/player.html');
 });
 
 app.get('/', function(req, res){  

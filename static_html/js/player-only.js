@@ -107,7 +107,7 @@ $(function(){
 		  	socket.on('player.time', function (data) {
 		  		if (!that.currentTrack) { return }
 	  			$(".time span").html(Filters.msToSec(data.timePlayed));
-	  			$("progress").attr('value', data.timePlayed);
+                $('.progress .color').css('width', (data.timePlayed*100/that.currentTrack.duration_ms)+'%');	  			
 		  	});
         }
 

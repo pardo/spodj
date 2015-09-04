@@ -1,0 +1,89 @@
+body {
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    background: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+.progress{
+    position: absolute;
+    bottom: 0;
+    height: 1.5vh;
+    width: 100%
+}
+.progress .color{
+    background: #4d000f;
+    background: -moz-linear-gradient(left, #4d000f 0%, #ff0000 100%);
+    background: -webkit-gradient(left top, right top, color-stop(0%, #4d000f), color-stop(100%, #ff0000));
+    background: -webkit-linear-gradient(left, #4d000f 0%, #ff0000 100%);
+    background: -o-linear-gradient(left, #4d000f 0%, #ff0000 100%);
+    background: -ms-linear-gradient(left, #4d000f 0%, #ff0000 100%);
+    background: linear-gradient(to right, #4d000f 0%, #ff0000 100%);
+    -webkit-filter: blur(1px);
+    width: 0%;
+    height: 1.5vh;
+    transition: -0.5s;
+}
+
+
+.song-bg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-position: center;
+    background-size: cover;
+}
+
+.player-widget {
+    background: url('/img/main-bg.png') 50% 50% no-repeat;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+.song-data {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding-bottom: 2vh;
+    padding-top: 20px;
+    
+
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#7db9e8+0,000000+100&amp;0+0,1+100 */
+    background: -moz-linear-gradient(top,  rgba(0,0,0,0) 0%,  #262f39 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(100%, #262f39)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%, #262f39 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(0,0,0,0) 0%, #262f39 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(0,0,0,0) 0%, #262f39 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  rgba(0,0,0,0) 0%, #262f39 100%); /* W3C */    
+
+    width: 100%;
+    font-size: 6vh;
+    overflow: hidden;
+    color: white;
+    text-shadow: 1px 1px 3px black;
+}
+
+.title {
+    font-family: 'sen', "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 700;    
+    text-shadow: 0px 0px 6px #000;
+}
+.artist {
+    font-weight: 400;    
+    text-shadow: 0px 0px 6px #000;
+}
+
+.time {
+    position: absolute;
+    right: 0;
+    bottom: 2vh;
+}
+.artist,
+.title {
+    padding: 0 10px;
+}
+.time {
+    padding-right: 10px;
+}

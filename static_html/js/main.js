@@ -114,6 +114,8 @@ $(function(){
 		this.$playBtn = $("[play-btn-el]");
 		this.$pauseBtn = $("[pause-btn-el]");
 
+		this.$saveQueueToNewPlaylistEl = $("[save-to-new-playlist-el]");
+
 		this.cachedQueueTracks = [];
 		this.currentTrack = null;
 		this.currentTrackUri = null;
@@ -337,13 +339,21 @@ $(function(){
 			});
 		};
 
+		this.unqueueTrackUri = function(uri){
+			$.ajax({
+				url: "/unqueue/",
+				type: "post",
+				data: {
+					uri: uri
+				}
+			});
+		};
 
 		this.queueTracksFromPlaylist = function(playlist){
 			for (var i = 0; i < playlist.tracks.length; i++) {
 				this.queueTrackUri(playlist.tracks[i]);
 			};
 		};
-
 
 		this.getQueue = function(){
 			return $.ajax({ url: "/queue/", type: "get" })
@@ -411,8 +421,21 @@ $(function(){
 				});
 
 			});
-		}
+		};
 
+		this.getSuggestion = function(q){
+			return $.ajax({
+				url: "/suggestion/",				
+				data: {					
+					search: q
+				}
+			});
+		};
+
+
+		this.$el.on("click", '[data-track-uri-remove]', function(){
+			that.unqueueTrackUri($(this).data("track-uri-remove"));
+		});
 		this.$el.on("click", '[data-track-uri]', function(){
 			that.queueTrackUri($(this).data("track-uri"));
 		});
@@ -429,6 +452,14 @@ $(function(){
 		this.$el.on("click", '[data-artist-id]', function(e){
 			e.preventDefault();
 			page("/artist/"+$(this).data("artist-id"));
+		});
+
+		this.$saveQueueToNewPlaylistEl.click(function(e){
+			e.preventDefault();			
+			var name = prompt("Playlist name").trim();
+			if (name !="") {			
+				that.saveQueueToNewPlaylist(name);
+			}
 		});
 
 		this.$refreshQueueBtn.click(function(e){
@@ -461,6 +492,35 @@ $(function(){
             $.ajax({ url: "/prev/", type: "post" });
         });
 
+        this.$el.on("click", "[play-playlist]", function(e){
+            e.preventDefault();
+            $.ajax({ url: "/playlist/"+$(this).attr("play-playlist")+"/play/", type: "post" });
+        });
+
+
+    	this.$input.selectize({    
+    		create: true,
+    		maxItems: 1,
+    		render: {
+    			option: function(item, escape) {
+            		return '<div>' + item.text + '</div>';
+        		}
+    		},
+    		load: function(query, callback) {
+        		if (query.length<3) return callback();
+        		that.getSuggestion(query).then(function(res) {
+            		callback(res.map(function(input){
+         			   return {value: input, text: input}
+        			}));
+        		}, function() {
+            		callback();
+        		});        
+    		},
+    		onChange: function(){
+    			page("/search/"+encodeURIComponent(that.$input.val()));
+    		}
+		});
+
 
 
         try{
@@ -484,6 +544,7 @@ $(function(){
 	  			//data.timePlayed
 		  	});
 
+			socket.on('queue.replaced', function(){ that.refreshQueue() });
 			socket.on('queue.removed', function(){ that.refreshQueue() });
 			socket.on('queue.added', function(){ that.refreshQueue() });
 			socket.on('player.pause', function(){
