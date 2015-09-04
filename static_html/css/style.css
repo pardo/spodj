@@ -20,7 +20,7 @@
   font-style: normal;
 }
 #search {
-  width: 100%;
+  width: 70%;
 }
 a.btn-default,
 .btn-default {
@@ -129,18 +129,18 @@ body {
 #search {
   position: relative;
 }
-#search input {
-  margin-top: 5px;
-  width: 370px;
-  line-height: 2.2em;
-  border-radius: 25px;
+#search .selectize-input {
   border: none;
-  padding: 0 15px;
+}
+#search .selectize-input input {
+  width: 100% !important;
+  padding: 1px 15px 0 20px !important;
 }
 #search .search-icon {
   position: absolute;
-  top: 13px;
-  right: 12px;
+  top: 8px;
+  left: 5px;
+  z-index: 20;
 }
 .controls.main {
   float: left;
@@ -296,9 +296,34 @@ body {
   border-bottom: 1px solid #1c222a;
   padding: 5px 0;
 }
-.play-qeue .qeue ul li.active {
-  background: #323232;
+.play-qeue .qeue ul li a.remove-track {
+  float: left;
+  font-size: 25px;
+  padding: 8px 5px 0;
+  vertical-align: middle;
+  width: 0;
+  opacity: 0;
+  -webkit-transition: width 0.5s 0.2s, opacity 0.5s;
+  -moz-transition: width 0.5s 0.2s, opacity 0.5s;
+  -o-transition: width 0.5s 0.2s, opacity 0.5s;
+  transition: width 0.5s 0.2s, opacity 0.5s;
 }
+.play-qeue .qeue ul li:hover {
+  background: #1c222a;
+}
+.play-qeue .qeue ul li:hover a {
+  width: 35px;
+  opacity: 1;
+  -webkit-transition: width 0.5s, opacity 0.5s 0.2s;
+  -moz-transition: width 0.5s, opacity 0.5s 0.2s;
+  -o-transition: width 0.5s, opacity 0.5s 0.2s;
+  transition: width 0.5s, opacity 0.5s 0.2s;
+}
+.play-qeue .qeue ul li.active {
+  background: #3a4858;
+}
+/* Use this on the hovered element */
+/* Use this on the normal state */
 /* Search Column */
 .main_content {
   background: url('/img/main-bg.png') 50% 50% no-repeat;
@@ -376,7 +401,11 @@ body {
   background: #7188a0;
   color: #e8dfdf;
 }
+hr {
+  border-top-color: #c8b2b2;
+}
 table.tracks {
+  margin-top: 25px;
   width: 100%;
 }
 table.tracks tr:hover {
@@ -385,4 +414,14 @@ table.tracks tr:hover {
 }
 table.tracks td {
   padding: 5px 10px;
+}
+table.tracks td.album-name {
+  width: 30%;
+}
+table.tracks td.album-name span {
+  max-width: 250px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

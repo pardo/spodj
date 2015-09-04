@@ -1,10 +1,10 @@
 <ul>
     {% for track in tracks %}
      <li {% if track.uri == currentTrack.uri %}class="active"{% endif %}>
+        <a href="#" class="remove-track" data-track-uri-remove="{{ track.uri }}"><i class="icon-clear"></i></a>
         <p class="duration">{{ track.duration_ms | msToSec }}</p>
-        <p class="song">{{ track.name }}</p>
+     		<p class="song">{% if track.uri == currentTrack.uri %} <i class="icon-play-arrow"></i> {% endif %} {{ track.name }}</p>
         <a href="#" class="artist" data-artist-id="{{ track.artists[0].id }}">{{ track.artists[0].name }}</a>
-        <a href="#" class="remove-track" data-track-uri-remove="{{ track.uri }}">X</a>
      </li>
     {% endfor %}
 </ul>
