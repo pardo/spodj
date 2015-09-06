@@ -1,5 +1,70 @@
 $(function(){
 	var template = nunjucks.configure('/templates');
+
+	debounce = function (func, wait, immediate) {
+	  var timeout, args, context, timestamp, result;
+
+	  var later = function() {
+	    var last = Date.now() - timestamp;
+
+	    if (last < wait && last >= 0) {
+	      timeout = setTimeout(later, wait - last);
+	    } else {
+	      timeout = null;
+	      if (!immediate) {
+	        result = func.apply(context, args);
+	        if (!timeout) context = args = null;
+	      }
+	    }
+	  };
+
+	  return function() {
+	    context = this;
+	    args = arguments;
+	    timestamp = Date.now();
+	    var callNow = immediate && !timeout;
+	    if (!timeout) timeout = setTimeout(later, wait);
+	    if (callNow) {
+	      result = func.apply(context, args);
+	      context = args = null;
+	    }
+
+	    return result;
+	  };
+	};
+
+	throttle = function (func, wait, options) {
+	    var context, args, result;
+	    var timeout = null;
+	    var previous = 0;
+	    if (!options) options = {};
+	    var later = function() {
+	      previous = options.leading === false ? 0 : Date.now();
+	      timeout = null;
+	      result = func.apply(context, args);
+	      if (!timeout) context = args = null;
+	    };
+	    return function() {
+	      var now = Date.now();
+	      if (!previous && options.leading === false) previous = now;
+	      var remaining = wait - (now - previous);
+	      context = this;
+	      args = arguments;
+	      if (remaining <= 0 || remaining > wait) {
+	        if (timeout) {
+	          clearTimeout(timeout);
+	          timeout = null;
+	        }
+	        previous = now;
+	        result = func.apply(context, args);
+	        if (!timeout) context = args = null;
+	      } else if (!timeout && options.trailing !== false) {
+	        timeout = setTimeout(later, remaining);
+	      }
+	      return result;
+	    };
+	};
+
 	Filters = {
 		msToSec: function(ms){
 	  		ms = parseInt(ms/1000);
@@ -472,12 +537,12 @@ $(function(){
 			page("/search/"+encodeURIComponent(that.$input.val()));
 		});
 
-        $("[data-player-pause]").click(function(e){
+        this.$pauseBtn.click(function(e){
             e.preventDefault();
             $.ajax({ url: "/pause/", type: "post" });
         });
 
-        $("[data-player-resume]").click(function(e){
+        this.$playBtn.click(function(e){
             e.preventDefault();
             $.ajax({ url: "/resume/", type: "post" });
         });
@@ -497,28 +562,44 @@ $(function(){
             $.ajax({ url: "/playlist/"+$(this).attr("play-playlist")+"/play/", type: "post" });
         });
 
-
-    	this.$input.selectize({    
-    		create: true,
-    		maxItems: 1,
-    		render: {
-    			option: function(item, escape) {
-            		return '<div>' + item.text + '</div>';
+        this.$el.on("click", "[data-play-queue-position]", function(e){
+        	$.ajax({
+        		url: "/queue/changeto/",
+        		type: "post",
+        		data: {
+        			position: $(this).data("play-queue-position")
         		}
-    		},
-    		load: function(query, callback) {
-        		if (query.length<3) return callback();
-        		that.getSuggestion(query).then(function(res) {
-            		callback(res.map(function(input){
-         			   return {value: input, text: input}
-        			}));
-        		}, function() {
-            		callback();
-        		});        
-    		},
-    		onChange: function(){
-    			page("/search/"+encodeURIComponent(that.$input.val()));
-    		}
+        	});
+        });
+
+        var suggestionSource = new Bloodhound({
+  			datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+  			queryTokenizer: Bloodhound.tokenizers.whitespace,
+  			rateLimitWait: 600,
+			remote: {
+			  url: '/suggestion/?search=%QUERY',
+			  wildcard: '%QUERY'
+			}
+		});
+
+		this.$input.typeahead(null, {  			
+  			source: suggestionSource
+		});
+
+		var goSearch = debounce(function(s){
+			if (s.trim().length==0) {
+				page("/");
+			} else {
+				page("/search/"+encodeURIComponent(s));				
+			}
+		}, 222);
+
+		this.$input.bind("typeahead:select", function(e, suggestion){			
+			goSearch(suggestion);
+		});
+
+		this.$input.on("keydown", function(e){
+			if (e.which==13) { goSearch(that.$input.val()); }
 		});
 
 
@@ -590,7 +671,7 @@ $(function(){
 
 	page('/artist/:artistId', function(context){
 		AppWidget.showArtist(context.params.artistId);
-	});
+	});	
 
 	page();
 

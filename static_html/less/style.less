@@ -10,11 +10,6 @@
 @med-only: ~"only screen and (min-width: 600px) and (max-width: 992px)";
 @large-only: ~"only screen and (min-width : 993px)";
 
-
-//TODO fixme Lisandro
-#search {
-  width: 70%;
-}
 .truncate(){
   white-space: nowrap;
   overflow: hidden;
@@ -97,22 +92,55 @@ body {
   background: @dark;
   color:@light;
 }
+
+
 #search{
-  position: relative;
-  .selectize-input {
+  width: 100%;
+  form{
+    position: relative;
+  }
+  input{
     border: none;
-    input{
-      width: 100% !important;
-      padding: 1px 15px 0 20px !important;
-    }
+    width: 100% !important;
+    padding: 1px 15px 0 20px !important;
+    height: 35px;
+    font-size: 16px;
+    border-radius: 26px;
   }
   .search-icon{
     position: absolute;
-    top: 8px;
-    left: 5px;
+    top: 7px;
+    right: 10px;
     z-index: 20;
+    font-size: 20px;
   }
+  .twitter-typeahead{
+    width: 100%;
+  }
+
+  .tt-menu.tt-open {
+    width: 100%;
+    background: @primary;
+    padding: 0px 5px 5px 5px;
+    border-radius: 10px;
+    margin-top: -8px;
+  }
+  .tt-dataset{
+    background: white;
+    border-radius: 0 0 6px 6px;
+    padding-top: 8px; /* used to mix the whites of the results and the input */
+  }
+  .tt-suggestion.tt-selectable {
+    cursor: pointer;
+    &:hover, &.tt-cursor{  
+      color: @primary;
+    }
+    padding: 4px 10px;
+  }
+
 }
+
+
 .controls{
   &.main{
     float: left;
@@ -244,6 +272,7 @@ body {
     float: right;
   }
   .qeue{
+    background: lighten(@dark, 10%);
     ul{
       list-style: none;
       max-height:~'calc(100vh - 385px)';
@@ -254,23 +283,39 @@ body {
       overflow-y: scroll;
       li{
         a.remove-track{
-            float: left;
+            position: absolute;
+            left: 5px;
             font-size: 25px;
-            padding: 8px 5px 0;
-            vertical-align: middle;
+            height: 25px;
+            line-height: 25px;
+            top: ~'calc(50% - 12.5px)';            
             .fade-out-transition();
         }
+        
+        &.active .track-info{
+          background: lighten(@dark, 10%);
+        }
+        
+        .track-info {
+          background: @dark;
+          .fade-out-move();          
+          padding: 5px 0;
+        }
+
         &:hover{
-          background: darken(@dark, 5%);
           a{
             .fade-in-transition();
           }
+          .track-info {            
+            background: darken(@dark, 5%);
+           .fade-in-move();          
+          }
         }
-        &.active{
-          background: lighten(@dark, 10%);
-        }
-        border-bottom: 1px solid darken(@dark, 5%);
-        padding: 5px 0;
+        
+
+        border-bottom: 1px solid darken(@dark, 5%);        
+        perspective: 1000px;
+        position: relative;
       }
     }
   }
@@ -285,9 +330,24 @@ body {
 /* Use this on the normal state */
 .fade-out-transition(@fade-in-time: 0.5s, @fade-out-time: 0.5s, @fade-in-delay: 3s, @fade-out-delay: 0.3s){
   width: 0;
-  opacity: 0;
+  opacity: 0;  
   .transition(width @fade-out-time @fade-out-delay, opacity @fade-out-time );
 }
+
+/* Use this on the hovered element */
+.fade-in-move(@fade-in-time: 0.5s, @fade-out-time: 0.5s, @fade-in-delay: 0.7s, @fade-out-delay: 0.3s){  
+  transform: rotateY(-22deg);
+  .transition(transform @fade-in-time @fade-in-delay, background-image @fade-in-time @fade-in-delay);
+}
+
+/* Use this on the normal state */
+.fade-out-move(@fade-in-time: 0.5s, @fade-out-time: 0.5s, @fade-in-delay: 3s, @fade-out-delay: 0.3s){  
+  transform-origin: 100% 50%;
+  transform: rotateY(0deg);
+  .transition(transform @fade-out-time @fade-out-delay, background-image @fade-out-time @fade-out-delay);
+}
+
+
 /* Search Column */
 .main_content{
   background: url('/img/main-bg.png') 50% 50% no-repeat;

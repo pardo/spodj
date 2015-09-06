@@ -26,6 +26,38 @@ var username = login.username;
 var password = login.password;
 
 
+debounce = function (func, wait, immediate) {
+  var timeout, args, context, timestamp, result;
+
+  var later = function() {
+    var last = Date.now() - timestamp;
+
+    if (last < wait && last >= 0) {
+      timeout = setTimeout(later, wait - last);
+    } else {
+      timeout = null;
+      if (!immediate) {
+        result = func.apply(context, args);
+        if (!timeout) context = args = null;
+      }
+    }
+  };
+
+  return function() {
+    context = this;
+    args = arguments;
+    timestamp = Date.now();
+    var callNow = immediate && !timeout;
+    if (!timeout) timeout = setTimeout(later, wait);
+    if (callNow) {
+      result = func.apply(context, args);
+      context = args = null;
+    }
+
+    return result;
+  };
+};
+
 throttle = function (func, wait, options) {
     var context, args, result;
     var timeout = null;
@@ -96,7 +128,6 @@ SpotifyPlayer = (function(){
             queueIndex: TracksQueue.queueIndex,
             timePlayed: 0
         });
-
         this.playTrackUri(uri);
       }
     }
@@ -105,7 +136,7 @@ SpotifyPlayer = (function(){
   this.startPlayLoop = function() {
     this.playLoopId = setInterval(function(){
       that.checkAndPlay()
-    }, 400);
+    }, 700);
   };
 
   this.pause = function(){
@@ -246,12 +277,12 @@ TracksQueue = (function(){
     };
 
     this.next = function(){
+        if (this.tracksUris.length == 0) return null;
         this.queueIndex = (this.queueIndex+1) % this.tracksUris.length;
         if (isNaN(this.queueIndex)) {
           this.queueIndex = 0;
-        } else {
-          console.log("Current Track %s", this.queueIndex);  
-        }        
+        } 
+        console.log("Current Track %s", this.queueIndex);          
         return this.tracksUris[this.queueIndex];
     };
 
@@ -287,6 +318,12 @@ app.post('/queue/', function(req, res){
   var uri = req.body.uri;
   TracksQueue.pushTrackUri(uri);
   res.send("OK");
+});
+
+app.post('/queue/changeto/', function(req, res){
+  TracksQueue.queueIndex = parseInt(req.body.position)-1;
+  res.send("OK");
+  SpotifyPlayer.skip(true);
 });
 
 app.post('/unqueue/', function(req, res){
@@ -331,13 +368,10 @@ app.get('/suggestion/', function(req, res){
   });
 });      
 
-
-
 app.post('/playlist/:id/play/', function(req, res){  
   playlists.findOne({ _id: req.params.id }, function (err, doc) {
     if (doc) {        
       TracksQueue.replaceQueue(doc.tracks);
-      SpotifyPlayer.skip(true);
       res.send("OK");
     } else {
       res.status(404).send('Not found');

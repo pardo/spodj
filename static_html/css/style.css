@@ -19,9 +19,6 @@
   font-weight: 900;
   font-style: normal;
 }
-#search {
-  width: 70%;
-}
 a.btn-default,
 .btn-default {
   color: #fff;
@@ -127,20 +124,49 @@ body {
   color: #e8dfdf;
 }
 #search {
+  width: 100%;
+}
+#search form {
   position: relative;
 }
-#search .selectize-input {
+#search input {
   border: none;
-}
-#search .selectize-input input {
   width: 100% !important;
   padding: 1px 15px 0 20px !important;
+  height: 35px;
+  font-size: 16px;
+  border-radius: 26px;
 }
 #search .search-icon {
   position: absolute;
-  top: 8px;
-  left: 5px;
+  top: 7px;
+  right: 10px;
   z-index: 20;
+  font-size: 20px;
+}
+#search .twitter-typeahead {
+  width: 100%;
+}
+#search .tt-menu.tt-open {
+  width: 100%;
+  background: #ca2a2a;
+  padding: 0px 5px 5px 5px;
+  border-radius: 10px;
+  margin-top: -8px;
+}
+#search .tt-dataset {
+  background: white;
+  border-radius: 0 0 6px 6px;
+  padding-top: 8px;
+  /* used to mix the whites of the results and the input */
+}
+#search .tt-suggestion.tt-selectable {
+  cursor: pointer;
+  padding: 4px 10px;
+}
+#search .tt-suggestion.tt-selectable:hover,
+#search .tt-suggestion.tt-selectable.tt-cursor {
+  color: #ca2a2a;
 }
 .controls.main {
   float: left;
@@ -283,6 +309,9 @@ body {
 .play-qeue .duration {
   float: right;
 }
+.play-qeue .qeue {
+  background: #3a4858;
+}
 .play-qeue .qeue ul {
   list-style: none;
   max-height: calc(100vh - 385px);
@@ -294,13 +323,16 @@ body {
 }
 .play-qeue .qeue ul li {
   border-bottom: 1px solid #1c222a;
-  padding: 5px 0;
+  perspective: 1000px;
+  position: relative;
 }
 .play-qeue .qeue ul li a.remove-track {
-  float: left;
+  position: absolute;
+  left: 5px;
   font-size: 25px;
-  padding: 8px 5px 0;
-  vertical-align: middle;
+  height: 25px;
+  line-height: 25px;
+  top: calc(50% - 12.5px);
   width: 0;
   opacity: 0;
   -webkit-transition: width 0.5s 0.3s, opacity 0.5s;
@@ -308,8 +340,18 @@ body {
   -o-transition: width 0.5s 0.3s, opacity 0.5s;
   transition: width 0.5s 0.3s, opacity 0.5s;
 }
-.play-qeue .qeue ul li:hover {
-  background: #1c222a;
+.play-qeue .qeue ul li.active .track-info {
+  background: #3a4858;
+}
+.play-qeue .qeue ul li .track-info {
+  background: #262f39;
+  transform-origin: 100% 50%;
+  transform: rotateY(0deg);
+  -webkit-transition: -webkit-transform 0.5s 0.3s, background-image 0.5s 0.3s;
+  -moz-transition: -moz-transform 0.5s 0.3s, background-image 0.5s 0.3s;
+  -o-transition: -o-transform 0.5s 0.3s, background-image 0.5s 0.3s;
+  transition: -webkit-transform 0.5s 0.3s,-moz-transform 0.5s 0.3s,-o-transform 0.5s 0.3s,transform 0.5s 0.3s, background-image 0.5s 0.3s;
+  padding: 5px 0;
 }
 .play-qeue .qeue ul li:hover a {
   width: 35px;
@@ -319,9 +361,16 @@ body {
   -o-transition: width 0.5s 0.7s, opacity 0.5s 0.7s;
   transition: width 0.5s 0.7s, opacity 0.5s 0.7s;
 }
-.play-qeue .qeue ul li.active {
-  background: #3a4858;
+.play-qeue .qeue ul li:hover .track-info {
+  background: #1c222a;
+  transform: rotateY(-22deg);
+  -webkit-transition: -webkit-transform 0.5s 0.7s, background-image 0.5s 0.7s;
+  -moz-transition: -moz-transform 0.5s 0.7s, background-image 0.5s 0.7s;
+  -o-transition: -o-transform 0.5s 0.7s, background-image 0.5s 0.7s;
+  transition: -webkit-transform 0.5s 0.7s,-moz-transform 0.5s 0.7s,-o-transform 0.5s 0.7s,transform 0.5s 0.7s, background-image 0.5s 0.7s;
 }
+/* Use this on the hovered element */
+/* Use this on the normal state */
 /* Use this on the hovered element */
 /* Use this on the normal state */
 /* Search Column */
