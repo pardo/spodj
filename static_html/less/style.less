@@ -132,7 +132,7 @@ body {
   }
   .tt-suggestion.tt-selectable {
     cursor: pointer;
-    &:hover, &.tt-cursor{  
+    &:hover, &.tt-cursor{
       color: @primary;
     }
     padding: 4px 10px;
@@ -275,7 +275,7 @@ body {
     background: lighten(@dark, 10%);
     ul{
       list-style: none;
-      max-height:~'calc(100vh - 385px)';
+      max-height:~'calc(100vh - 305px)';
       &::-webkit-scrollbar {
           width: 0;
           height: 0;
@@ -288,17 +288,17 @@ body {
             font-size: 25px;
             height: 25px;
             line-height: 25px;
-            top: ~'calc(50% - 12.5px)';            
+            top: ~'calc(50% - 12.5px)';
             .fade-out-transition();
         }
-        
+
         &.active .track-info{
           background: lighten(@dark, 10%);
         }
-        
+
         .track-info {
           background: @dark;
-          .fade-out-move();          
+          .fade-out-move();
           padding: 5px 0;
         }
 
@@ -306,14 +306,14 @@ body {
           a{
             .fade-in-transition();
           }
-          .track-info {            
+          .track-info {
             background: darken(@dark, 5%);
-           .fade-in-move();          
+           .fade-in-move();
           }
         }
-        
 
-        border-bottom: 1px solid darken(@dark, 5%);        
+
+        border-bottom: 1px solid darken(@dark, 5%);
         perspective: 1000px;
         position: relative;
       }
@@ -330,18 +330,18 @@ body {
 /* Use this on the normal state */
 .fade-out-transition(@fade-in-time: 0.5s, @fade-out-time: 0.5s, @fade-in-delay: 3s, @fade-out-delay: 0.3s){
   width: 0;
-  opacity: 0;  
+  opacity: 0;
   .transition(width @fade-out-time @fade-out-delay, opacity @fade-out-time );
 }
 
 /* Use this on the hovered element */
-.fade-in-move(@fade-in-time: 0.5s, @fade-out-time: 0.5s, @fade-in-delay: 0.7s, @fade-out-delay: 0.3s){  
+.fade-in-move(@fade-in-time: 0.5s, @fade-out-time: 0.5s, @fade-in-delay: 0.7s, @fade-out-delay: 0.3s){
   transform: rotateY(-22deg);
   .transition(transform @fade-in-time @fade-in-delay, background-image @fade-in-time @fade-in-delay);
 }
 
 /* Use this on the normal state */
-.fade-out-move(@fade-in-time: 0.5s, @fade-out-time: 0.5s, @fade-in-delay: 3s, @fade-out-delay: 0.3s){  
+.fade-out-move(@fade-in-time: 0.5s, @fade-out-time: 0.5s, @fade-in-delay: 3s, @fade-out-delay: 0.3s){
   transform-origin: 100% 50%;
   transform: rotateY(0deg);
   .transition(transform @fade-out-time @fade-out-delay, background-image @fade-out-time @fade-out-delay);
