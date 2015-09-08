@@ -106,6 +106,16 @@ SpotifyPlayer = (function(){
   // pipe() returns destination stream
   this.speaker = this.lame.pipe(new Speaker());
 
+  this.lame.on('format', console.log);
+  
+  
+  this.lame.on('data', function(data){    
+      console.log(Math.max.apply(null,data),"  <>  ", Math.min.apply(null,data))
+  
+  
+    
+  })
+  
   this.login = function(){
     this.spotify = Spotify.login(username, password, function (err, spotify) {
       if (err) throw err;
@@ -347,7 +357,7 @@ app.post('/resume/', function(req, res){
   res.send("OK");
 });
 
-app.get('/suggestion/', function(req, res){  
+app.get('/suggestion/wikipedia/', function(req, res){  
   var q = req.query.search;  
   request({
     url: "https://en.wikipedia.org/w/api.php",
@@ -366,7 +376,32 @@ app.get('/suggestion/', function(req, res){
       res.status(404).send('Not found');
     }    
   });
-});      
+});
+
+
+app.get('/suggestion/', function(req, res){  
+  var q = req.query.search;  
+  request({
+    url: "https://www.musixmatch.com/ws/1.1/macro.search?app_id=community-app-v1.0&format=json&part=artist_image&page_size=10&q="+q,
+    //url: "https://www.musixmatch.com/ws/1.1/macro.search",
+    strictSSL: false,
+  }, function (error, response, body){
+    
+    try {
+      var r = JSON.parse(body).message.body.macro_result_list.artist_list.reduce(function(a, d){
+           if (d.artist.artist_name < 65 || d.artist.artist_rating > 0){
+               a.push(d.artist.artist_name);
+           }
+           return a          
+      }, []);
+      res.send(r);
+    } catch(e) {
+      console.log(e);
+      res.status(404).send('Not found');
+    }    
+  });
+});
+
 
 app.post('/playlist/:id/play/', function(req, res){  
   playlists.findOne({ _id: req.params.id }, function (err, doc) {
