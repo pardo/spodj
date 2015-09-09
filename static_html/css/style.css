@@ -315,7 +315,7 @@ body {
 }
 .play-qeue .qeue ul {
   list-style: none;
-  max-height: calc(100vh - 305px);
+  max-height: calc(100vh - 365px);
   overflow-y: scroll;
 }
 .play-qeue .qeue ul::-webkit-scrollbar {
