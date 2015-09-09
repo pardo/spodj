@@ -106,12 +106,13 @@ body {
     height: 35px;
     font-size: 16px;
     border-radius: 26px;
+    z-index: 101
   }
   .search-icon{
     position: absolute;
     top: 7px;
     right: 10px;
-    z-index: 20;
+    z-index: 102;
     font-size: 20px;
   }
   .twitter-typeahead{
@@ -120,14 +121,14 @@ body {
 
   .tt-menu.tt-open {
     width: 100%;
-    background: @primary;
-    padding: 0px 5px 5px 5px;
+    background: transparent;
+    padding: 0px;
     border-radius: 10px;
-    margin-top: -8px;
+    margin-top: -15px;
   }
   .tt-dataset{
     background: white;
-    border-radius: 0 0 6px 6px;
+    border-radius: 0 0 16px 16px;
     padding-top: 8px; /* used to mix the whites of the results and the input */
   }
   .tt-suggestion.tt-selectable {
@@ -420,6 +421,9 @@ table.tracks{
     &:hover{
       background: lighten(@dark, 45%);
       color:#fff;
+    }
+    &:active{
+      background: lighten(@dark, 65%);
     }
   }
   td{

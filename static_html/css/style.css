@@ -136,12 +136,13 @@ body {
   height: 35px;
   font-size: 16px;
   border-radius: 26px;
+  z-index: 101;
 }
 #search .search-icon {
   position: absolute;
   top: 7px;
   right: 10px;
-  z-index: 20;
+  z-index: 102;
   font-size: 20px;
 }
 #search .twitter-typeahead {
@@ -149,14 +150,14 @@ body {
 }
 #search .tt-menu.tt-open {
   width: 100%;
-  background: #ca2a2a;
-  padding: 0px 5px 5px 5px;
+  background: transparent;
+  padding: 0px;
   border-radius: 10px;
-  margin-top: -8px;
+  margin-top: -15px;
 }
 #search .tt-dataset {
   background: white;
-  border-radius: 0 0 6px 6px;
+  border-radius: 0 0 16px 16px;
   padding-top: 8px;
   /* used to mix the whites of the results and the input */
 }
@@ -460,6 +461,9 @@ table.tracks {
 table.tracks tr:hover {
   background: #90a1b5;
   color: #fff;
+}
+table.tracks tr:active {
+  background: #cdd5de;
 }
 table.tracks td {
   padding: 5px 10px;
