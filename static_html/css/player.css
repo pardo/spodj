@@ -32,12 +32,14 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    background-position: center;
-    background-size: cover;
+    background-size: contain;
+    background-position: 50% 0;
+    background-repeat: no-repeat;        
 }
 
 .player-widget {
     background: url('/img/main-bg.png') 50% 50% no-repeat;
+    background-color: black;
     position: relative;
     width: 100vw;
     height: 100vh;
