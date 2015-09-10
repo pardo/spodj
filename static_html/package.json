@@ -12,5 +12,12 @@
     "grunt": "~0.4.5",
     "grunt-contrib-watch": "~0.6.1",
     "grunt-contrib-less": "~1.0.1"
+  },
+  "dependencies": {
+    "gulp": "~3.9.0",
+    "gulp-less": "~3.0.3",
+    "gulp-sourcemaps": "~1.5.2",
+    "gulp-watch": "~4.3.5",
+    "gulp-less-dependents": "~1.1.1"
   }
 }
