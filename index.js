@@ -217,8 +217,8 @@ SpotifyPlayer = (function(){
 
       console.log('Playing: %s - %s', track.artist[0].name, track.name);
       
-      if (this.spotifyStream != null) {
-        this.skip(true);
+      if (that.spotifyStream != null) {
+        that.skip(true);
       }
       that.spotifyStream = track.play();
       that.throttledStream = that.spotifyStream.pipe(new Throttle(that.BIT_RATE/8)); // convert to bytes per second

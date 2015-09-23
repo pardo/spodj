@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/css/style.css">
   </head>
   <body class="app-widget" ng-app="PlayerApp">
+    <span ng-controller="InitController"></span>
     <div id="header">
       <div class="container-fluid">
         <div class="row">
@@ -47,15 +48,35 @@
         </div>
       </div>
     </div>
+
       <div class="playlist dark_bg">
         <h3>playlists</h3>
         <a href="" save-to-new-playlist-el>Save to new playlist</a>
         <div playlists-el class="plalists-wrap">
         </div>
       </div>
+
       <div class="play-qeue dark_bg">
         <div playing-now-el class="playing-now"> </div>
-        <div player-queue-el class="qeue" ng-controller="QueueController"> </div>
+        <div class="qeue" ng-controller="QueueController">
+          <ul>
+            <li ng-repeat="track in tracks"
+                ng-class="{
+                  'active': track.uri == currentTrack.uri
+                }"
+                >
+              <a href="#" class="remove-track" ng-click="removeTrack(track)"><i class="icon-clear"></i></a>
+              <div class="track-info" ng-click="queueChangeTo($index)">
+                <p class="duration" ng-bind="track.duration_ms | msToSec"></p>
+                <p class="song">
+                  <i class="icon-play-arrow" ng-show="track.uri == currentTrack.uri"></i>
+                  <span ng-bind="track.name"></span>
+                </p>
+                <a href="#" class="artist" ng-click="navigateToArtist(track.artists)" ng-bind="track.artists[0].name"></a>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
 
     <div class="main_content">
@@ -72,8 +93,10 @@
     <!-- jQuery first, then Bootstrap JS. -->
     <script src="/js/lib/jquery-2.1.4.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.min.js"></script>
+
     <script src="/js/controllers/app.js"></script>
-    <script src="/js/controllers/queue.js"></script>
+    <script src="/js/controllers/services.js"></script>
+    <script src="/js/controllers/controllers.js"></script>
 
     <script src="/js/lib/bootstrap.min.js"></script>
     <script type="text/javascript" src="/js/lib/jquery-2.1.4.min.js"></script>
