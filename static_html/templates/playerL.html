@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/css/icons.css">
     <link rel="stylesheet" href="/css/style.css">
   </head>
-  <body class="app-widget">
+  <body class="app-widget" ng-app="PlayerApp">
     <div id="header">
       <div class="container-fluid">
         <div class="row">
@@ -55,7 +55,7 @@
       </div>
       <div class="play-qeue dark_bg">
         <div playing-now-el class="playing-now"> </div>
-        <div player-queue-el class="qeue"> </div>
+        <div player-queue-el class="qeue" ng-controller="QueueController"> </div>
       </div>
 
     <div class="main_content">
@@ -71,6 +71,10 @@
 
     <!-- jQuery first, then Bootstrap JS. -->
     <script src="/js/lib/jquery-2.1.4.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.min.js"></script>
+    <script src="/js/controllers/app.js"></script>
+    <script src="/js/controllers/queue.js"></script>
+
     <script src="/js/lib/bootstrap.min.js"></script>
     <script type="text/javascript" src="/js/lib/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="/js/lib/typeahead.js/typeahead.bundle.min.js"></script>
