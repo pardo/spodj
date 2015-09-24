@@ -317,6 +317,7 @@ body {
   list-style: none;
   max-height: calc(100vh - 365px);
   overflow-y: scroll;
+  position: relative;
 }
 .play-qeue .qeue ul::-webkit-scrollbar {
   width: 0;
@@ -326,6 +327,27 @@ body {
   border-bottom: 1px solid #1c222a;
   perspective: 1000px;
   position: relative;
+}
+.play-qeue .qeue ul li.ng-leave.ng-leave-active,
+.play-qeue .qeue ul li.ng-enter {
+  -webkit-transition: 0.5s all;
+  -moz-transition: 0.5s all;
+  -o-transition: 0.5s all;
+  transition: 0.5s all;
+  right: -100%;
+}
+.play-qeue .qeue ul li.ng-enter-stagger,
+.play-qeue .qeue ul li.ng-leave-stagger {
+  transition-delay: 0.1s;
+  transition-duration: 0s;
+}
+.play-qeue .qeue ul li.ng-leave,
+.play-qeue .qeue ul li.ng-enter.ng-enter-active {
+  -webkit-transition: 0.5s all;
+  -moz-transition: 0.5s all;
+  -o-transition: 0.5s all;
+  transition: 0.5s all;
+  right: 0%;
 }
 .play-qeue .qeue ul li a.remove-track {
   position: absolute;

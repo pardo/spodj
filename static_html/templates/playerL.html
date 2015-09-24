@@ -1,109 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags always come first -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
+<head>
+  <!-- Required meta tags always come first -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/css/normalize.css">
-    <link rel="stylesheet" href="/css/bootstrap.css">    
-    <link rel="stylesheet" href="/css/icons.css">
-    <link rel="stylesheet" href="/css/style.css">
-  </head>
-  <body class="app-widget" ng-app="PlayerApp">
-    <span ng-controller="InitController"></span>
-    <div id="header">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-sm-6">
-            <div id="search">
-              <form action="">                
-                <input type="search" name="main-search" placeholder="Search for Song, Album or Artist">
-                <span class="search-icon"><i class="icon-search"></i></span>
-              </form>
-            </div>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="/css/normalize.css">
+  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/icons.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {  display: none !important;  }
+  </style>
+</head>
+<body class="app-widget" ng-app="PlayerApp">
+<span ng-controller="InitController"></span>
+<div ng-controller="AppController">
+  <div id="header">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-6">
+          <div id="search">
+            <form action="">
+              <input type="search" name="main-search" placeholder="Search for Song, Album or Artist">
+              <span class="search-icon"><i class="icon-search"></i></span>
+            </form>
           </div>
-          <div class="col-sm-6">
-            <div class="player">
-              <div class="controls main">
-                <a href="" class="prev"><i data-player-prev class="icon-skip-previous"></i></a>
-                <a pause-btn-el href="" class="pause"><i data-player-pause class="icon-pause circle"></i></a>
-                <a play-btn-el href="" class="play"><i data-player-play class="icon-play-arrow circle"></i></a>
-                <a href="" class="next"><i data-player-next class="icon-skip-next"></i></a>
-              </div>
-              <!-- <div class="controls volume">
-                <div class="form-group">
-                    <label for="volume"><i class="icon-volume-up"></i></label>
-                  </div>
-              </div> -->
-              <div class="controls track">
-                <div class="progress">
-                  <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0;" played-time-el ></div>
+        </div>
+        <div class="col-sm-6">
+          <div class="player">
+            <div class="controls main">
+              <a href="" class="prev"><i data-player-prev class="icon-skip-previous"></i></a>
+              <a pause-btn-el href="" class="pause"><i data-player-pause class="icon-pause circle"></i></a>
+              <a play-btn-el href="" class="play"><i data-player-play class="icon-play-arrow circle"></i></a>
+              <a href="" class="next"><i data-player-next class="icon-skip-next"></i></a>
+            </div>
+            <!-- <div class="controls volume">
+              <div class="form-group">
+                  <label for="volume"><i class="icon-volume-up"></i></label>
                 </div>
+            </div> -->
+            <div class="controls track">
+              <div class="progress">
+                <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0;" played-time-el ></div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-      <div class="playlist dark_bg">
-        <h3>playlists</h3>
-        <a href="" save-to-new-playlist-el>Save to new playlist</a>
-        <div playlists-el class="plalists-wrap">
+  <div class="playlist dark_bg">
+    <h3>playlists</h3>
+    <a href="" save-to-new-playlist-el>Save to new playlist</a>
+    <div playlists-el class="plalists-wrap">
+    </div>
+  </div>
+
+  <div class="play-qeue dark_bg">
+
+    <div ng-controller="PlayingNowController" class="playing-now">
+
+      <img ng-src="{{ currentTrack.album.images[1].url }}" class="cover">
+      <div class="info">
+        <p class="song" ng-bind="currentTrack.name"></p>
+        <p class="artist" ng-bind="currentTrack.artists[0].name"></p>
+      </div>
+      <div class="progress_cont">
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" ng-style="{ 'width': currentTrack.timePlayedPercentage+'%' }"></div>
         </div>
       </div>
 
-      <div class="play-qeue dark_bg">
-        <div playing-now-el class="playing-now"> </div>
-        <div class="qeue" ng-controller="QueueController">
-          <ul>
-            <li ng-repeat="track in tracks"
-                ng-class="{
+    </div>
+
+
+    <div class="qeue" ng-controller="QueueController">
+      <ul ng-cloak>
+        <li ng-repeat="track in tracks track by track.uri"
+            ng-class="{
                   'active': track.uri == currentTrack.uri
                 }"
-                >
-              <a href="#" class="remove-track" ng-click="removeTrack(track)"><i class="icon-clear"></i></a>
-              <div class="track-info" ng-click="queueChangeTo($index)">
-                <p class="duration" ng-bind="track.duration_ms | msToSec"></p>
-                <p class="song">
-                  <i class="icon-play-arrow" ng-show="track.uri == currentTrack.uri"></i>
-                  <span ng-bind="track.name"></span>
-                </p>
-                <a href="#" class="artist" ng-click="navigateToArtist(track.artists)" ng-bind="track.artists[0].name"></a>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-    <div class="main_content">
-      <div album-results-el class="search-result">
-      </div>
-
-      <div artist-results-el class="search-result">
-      </div>
-
-      <div search-results-el class="search-result">
-      </div>
+            >
+          <a href="#" class="remove-track" ng-click="removeTrack(track)"><i class="icon-clear"></i></a>
+          <div class="track-info">
+            <p class="duration" ng-bind="track.duration_ms | msToSec"></p>
+            <p class="song" ng-click="queueChangeTo($index)">
+              <i class="icon-play-arrow" ng-show="track.uri == currentTrack.uri"></i>
+              <span ng-bind="track.name"></span>
+            </p>
+            <a href="#" class="artist" ng-click="navigateToArtist(track.artists)" ng-bind="track.artists[0].name"></a>
+          </div>
+        </li>
+      </ul>
     </div>
 
-    <!-- jQuery first, then Bootstrap JS. -->
-    <script src="/js/lib/jquery-2.1.4.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.min.js"></script>
+  </div>
 
-    <script src="/js/controllers/app.js"></script>
-    <script src="/js/controllers/services.js"></script>
-    <script src="/js/controllers/controllers.js"></script>
+  <div class="main_content">
+    <div album-results-el class="search-result">
+    </div>
 
-    <script src="/js/lib/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/js/lib/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="/js/lib/typeahead.js/typeahead.bundle.min.js"></script>
-    <script type="text/javascript" src="/js/lib/nunjucks.min.js"></script>
-    <script type="text/javascript" src="/js/lib/page.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript" src="/js/main.js"></script>
-  </body>
+    <div artist-results-el class="search-result">
+    </div>
+
+    <div search-results-el class="search-result">
+    </div>
+  </div>
+</div>
+
+
+<!-- jQuery first, then Bootstrap JS. -->
+<script src="/js/lib/jquery-2.1.4.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular-animate.min.js"></script>
+
+<script src="/js/controllers/app.js"></script>
+<script src="/js/controllers/services.js"></script>
+<script src="/js/controllers/controllers.js"></script>
+
+<script src="/js/lib/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/lib/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="/js/lib/typeahead.js/typeahead.bundle.min.js"></script>
+<script type="text/javascript" src="/js/lib/nunjucks.min.js"></script>
+<script type="text/javascript" src="/js/lib/page.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+</body>
 </html>

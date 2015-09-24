@@ -94,8 +94,8 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
                 that.getCurrentTrack(true); return
             }
             that.cachedCurrentTrack.timePlayed = data.timePlayed;
-            that.cachedCurrentTrack.timePercentage = parseInt(data.timePlayed*100/that.cachedCurrentTrack.duration_ms);
-            PubSub.publish('PlayerApi.currentTrack.timePlayed', this.cachedCurrentTrack);
+            that.cachedCurrentTrack.timePlayedPercentage = parseInt(data.timePlayed*100/that.cachedCurrentTrack.duration_ms);
+            PubSub.publish('PlayerApi.currentTrack.timePlayed', that.cachedCurrentTrack);
         });
 
         //data.timePlayed
@@ -129,7 +129,7 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
                         that.getTracks([that.uriToId(data.uri)]).then(function (tracks) {
                             that.cachedCurrentTrack = tracks.tracks[0];
                             that.cachedCurrentTrack.timePlayed = 0;
-                            that.cachedCurrentTrack.timePercentage = 0;
+                            that.cachedCurrentTrack.timePlayedPercentage = 0;
 
                             d.resolve(tracks.tracks[0]);
                             that.changedCurrentTrack();

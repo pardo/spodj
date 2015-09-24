@@ -282,7 +282,25 @@ body {
           height: 0;
       }
       overflow-y: scroll;
+      position: relative;
+
       li{
+        &.ng-leave.ng-leave-active,
+        &.ng-enter{
+          .transition(0.5s all);
+          right: -100%;
+        }
+        &.ng-enter-stagger,
+        &.ng-leave-stagger{
+          transition-delay: 0.1s;
+          transition-duration: 0s;
+        }
+        &.ng-leave,
+        &.ng-enter.ng-enter-active{
+          .transition(0.5s all);
+          right: 0%;
+        }
+
         a.remove-track{
             position: absolute;
             left: 5px;

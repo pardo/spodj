@@ -451,13 +451,7 @@ $(function(){
 		};
 
 		this.renderPlayingNow = function(){
-			template.render('playing_now.html', {
-				track: that.currentTrack
-			},
-			function(err, res) {
-				if (err) throw err;
-				this.$playerNow.html(res);
-			});
+
 
 		};
 
@@ -498,9 +492,6 @@ $(function(){
 		};
 
 
-		this.$el.on("click", '[data-track-uri-remove]', function(){
-			that.unqueueTrackUri($(this).data("track-uri-remove"));
-		});
 		this.$el.on("click", '[data-track-uri]', function(){
 			that.queueTrackUri($(this).data("track-uri"));
 		});
@@ -625,9 +616,6 @@ $(function(){
 	  			//data.timePlayed
 		  	});
 
-			socket.on('queue.replaced', function(){ that.refreshQueue() });
-			socket.on('queue.removed', function(){ that.refreshQueue() });
-			socket.on('queue.added', function(){ that.refreshQueue() });
 			socket.on('player.pause', function(){
 				that.$pauseBtn.hide();
 				that.$playBtn.show();

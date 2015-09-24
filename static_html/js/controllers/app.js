@@ -4,4 +4,4 @@ angular.module('PlayerAppFilters', []).filter('msToSec', function() {
         return parseInt(ms/60)+":"+(("000"+ms%60).slice(-2));
     }
 });
-PlayerApp = angular.module("PlayerApp", ['PlayerAppFilters']);
+PlayerApp = angular.module("PlayerApp", ['PlayerAppFilters', 'ngAnimate']);
