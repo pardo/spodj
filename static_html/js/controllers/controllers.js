@@ -16,9 +16,9 @@ PlayerApp
             });
         });
 
-        PlayerApi.getQueueTracks().then(function(response){
+        PlayerApi.getQueueTracks().then(function(tracks){
             $timeout(function () {
-                $scope.tracks = response.tracks;
+                $scope.tracks = tracks;
             });
         });
 
@@ -65,6 +65,26 @@ PlayerApp
         PubSub.subscribe("PlayerApi.currentTrack.timePlayed", function (currentTrack) {
             $timeout(function () {
                 $scope.currentTrack = currentTrack;
+            });
+        });
+
+    }]
+);
+
+
+PlayerApp
+    .controller('PlaylistController',
+    ['$scope', '$timeout', '$routeParams', 'PlayerApi', 'PubSub', function ($scope, $timeout, $routeParams, PlayerApi, PubSub) {
+        $scope.playlist = null;
+        $scope.playlistTracks = [];
+
+        PlayerApi.Playlist.get($routeParams.playlistId).then(function (playlist) {
+            $scope.playlist = playlist;
+            $scope.playlistTracks = null;
+
+            PlayerApi.SpotifyApi.getTracks($scope.playlist.tracks.map(PlayerApi.SpotifyApi.uriToId)).then(function (tracks) {
+                $scope.playlistTracks = tracks;
+                $timeout();
             });
         });
 

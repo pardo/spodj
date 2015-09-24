@@ -1,0 +1,6 @@
+<h3>Playlist <span ng-bind="playlist.name"></span></h3>
+<div>Number of tracks: <span ng-bind="playlist.tracks.length"></span></div>
+
+<div ng-repeat="track in playlistTracks">
+  <span ng-bind="track.name"></span>
+</div>

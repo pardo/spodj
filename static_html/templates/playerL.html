@@ -101,22 +101,17 @@
   </div>
 
   <div class="main_content">
-    <div album-results-el class="search-result">
-    </div>
-
-    <div artist-results-el class="search-result">
-    </div>
-
-    <div search-results-el class="search-result">
-    </div>
+    <div class="main-wrap" ng-view></div>
   </div>
+
 </div>
 
 
 <!-- jQuery first, then Bootstrap JS. -->
 <script src="/js/lib/jquery-2.1.4.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular-animate.min.js"></script>
+<script src="/js/lib/angular.min.js"></script>
+<script src="/js/lib/angular-animate.min.js"></script>
+<script src="/js/lib/angular-route.min.js"></script>
 
 <script src="/js/controllers/app.js"></script>
 <script src="/js/controllers/services.js"></script>

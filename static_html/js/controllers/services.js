@@ -81,8 +81,224 @@ PlayerApp.factory('PubSub', function () {
 PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
     console.log("--PlayerApp--");
 
-    return new function () {
+    var Playlist = function(doc){
+        if (doc != undefined) {
+            this.setDoc(doc);
+        } else {
+            this.name = "";
+            this.tracks = [];
+        }
+    };
+
+    Playlist.prototype.setDoc = function(doc) {
+        this._id = doc._id;
+        this.name = doc.name;
+        this.tracks = doc.tracks;
+    };
+
+
+    Playlist.prototype.getDoc = function() {
+        return {
+            name: this.name,
+            tracks: this.tracks
+        }
+    };
+
+    Playlist.prototype.save = function() {
+        var url = "/playlist/";
+        if (this._id !== undefined) {
+            url += this._id+"/";
+        }
+        var p = $.ajax({ url: url, type: "post", data: this.getDoc() });
+        p.done(function(doc){
+            this.setDoc(doc);
+        }.bind(this));
+        return p
+    };
+
+    Playlist.prototype.addTrack = function(uri) {
+        if (this._id === undefined) {
+            this.save().done(function(){
+                this.addTrack(uri);
+            }.bind(this));
+        }
+        var p = $.ajax({
+            url: "/playlist/"+this._id+"/add/",
+            type: "post",
+            data: { track: uri }
+        });
+        p.done(function(doc){
+            this.setDoc(doc);
+        }.bind(this));
+        return p
+    };
+
+    Playlist.all = function(){
+        var d = $.Deferred();
+        $.ajax({ url: "/playlist/" }).done(function(r){
+            d.resolve(r.map(function(doc){
+                var p = new Playlist();
+                p.setDoc(doc);
+                return p
+            }));
+        });
+        return d
+    };
+
+    Playlist.get = function(id){
+        var d = $.Deferred();
+        $.ajax({
+            url: "/playlist/"+id+"/"
+        }).done(function(doc){
+            var p = new Playlist();
+            p.setDoc(doc);
+            d.resolve(p);
+        });
+        return d
+    };
+
+    var SpotifyApi = function () {
+    };
+
+    SpotifyApi.prototype.uriToId = function (uri) {
+        return uri.split(":")[2];
+    };
+
+
+
+    SpotifyApi.prototype.getAlbum = function (id) {
+        return $.ajax({
+            url: "https://api.spotify.com/v1/albums/" + id
+        });
+    };
+
+    SpotifyApi.prototype.getAlbumTracks = function (id) {
+        return $.ajax({
+            url: "https://api.spotify.com/v1/albums/" + id + "/tracks",
+            data: {
+                "ids": ids.join(",")
+            }
+        });
+    };
+
+    SpotifyApi.prototype.getTracks = function (ids) {
+        /*
+         returns promised
+         [tracks]
+         */
+        //batch load tracks
+        var deferred;
+
+        if (ids == null || ids.length == 0) {
+            deferred = $.Deferred();
+            deferred.reject();
+            return deferred;
+        }
+
+        var idsSlice = ids.splice(0, 20);
+        var promises = [];
+        var tracks = [];
+
+        while (idsSlice.length > 0) {
+            promises.push($.ajax({
+                url: "https://api.spotify.com/v1/tracks",
+                data: {
+                    "ids": idsSlice.join(",")
+                }
+            }));
+            idsSlice = ids.splice(0, 20);
+        }
+
+        deferred = $.Deferred();
+
+        if (promises.length == 1) {
+            promises[0].done(function (response) {
+                deferred.resolve(response.tracks);
+            });
+            return deferred;
+        }
+
+        $.when.apply($, promises).done(function () {
+            for (var i = 0; i < arguments.length; i++) {
+                tracks.push.apply(tracks, arguments[i][0].tracks);
+            }
+            deferred.resolve(tracks);
+        });
+
+        return deferred
+    };
+
+    SpotifyApi.prototype.getArtist = function (artistId) {
+        return $.ajax({
+            url: "https://api.spotify.com/v1/artists/" + artistId
+        });
+    };
+
+    SpotifyApi.prototype.getArtistAlbums = function (artistId, offset) {
+        offset = offset || 0;
+        return $.ajax({
+            url: "https://api.spotify.com/v1/artists/" + artistId + "/albums",
+            data: {
+                "album_type": "album,compilation",
+                "limit": "50",
+                "market": "AR",
+                "offset": offset
+            }
+        });
+    };
+
+    SpotifyApi.prototype.getAlbums = function (ids) {
+        if (ids == null || ids.length == 0) {
+            var d = $.Deferred();
+            d.reject();
+            return d;
+        }
+
+        return $.ajax({
+            url: "https://api.spotify.com/v1/albums",
+            data: {
+                "ids": ids.join(","),
+                "market": "AR"
+            }
+        });
+    };
+
+    SpotifyApi.prototype.getArtistAndAlbums = function (artistId) {
+        var d = $.Deferred();
+        $.when(
+            this.getArtist(artistId),
+            this.getArtistAlbums(artistId)
+        ).done(function (artist, albums) {
+                //artist and albums contains all the args from the deferred callback > [0]
+                this.getAlbums(albums[0].items.map(function (d) {
+                    return d.id
+                })).done(function (response) {
+                    d.resolve(artist[0], response);
+                });
+            }.bind(this));
+        return d;
+    };
+
+    SpotifyApi.prototype.apiSearch = function (query, offset) {
+        offset = offset || 0;
+        return $.ajax({
+            url: "https://api.spotify.com/v1/search",
+            data: {
+                "type": "album,artist,track",
+                "limit": "20",
+                "market": "AR",
+                "offset": offset,
+                "q": query
+            }
+        });
+    };
+
+    SpotifyApi = new SpotifyApi();
+
+    return new function PlayerApi() {
         var that = this;
+        this.Playlist = Playlist;
+        this.SpotifyApi = SpotifyApi;
 
         this.cachedQueueTracks = null;
         this.cachedCurrentTrack = null;
@@ -112,170 +328,42 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
             //prevent multiple calls to the server but allow multiple responses
             if (this.getCurrentTrack_loading) { return this.getCurrentTrack_loading }
 
-            var d = $.Deferred();
+            var deferred = $.Deferred();
 
-            if (refreshCache || !that.cachedCurrentTrack) {
-                this.getCurrentTrack_loading = d;
-                d.always(function () {
-                    that.getCurrentTrack_loading = false;
-                });
+            if (refreshCache || !this.cachedCurrentTrack) {
+                this.getCurrentTrack_loading = deferred;
+                deferred.always(function () {
+                    this.getCurrentTrack_loading = false;
+                }.bind(this));
+
                 $.ajax({
                     url: "/track/"
                 }).done(function (data) {
                     if (!data.uri) {
-                        d.reject();
+                        deferred.reject();
                     } else {
-                        that.cachedCurrentTrackUri = data.uri;
-                        that.getTracks([that.uriToId(data.uri)]).then(function (tracks) {
-                            that.cachedCurrentTrack = tracks.tracks[0];
-                            that.cachedCurrentTrack.timePlayed = 0;
-                            that.cachedCurrentTrack.timePlayedPercentage = 0;
-
-                            d.resolve(tracks.tracks[0]);
-                            that.changedCurrentTrack();
-                        }, d.reject);
+                        this.cachedCurrentTrackUri = data.uri;
+                        SpotifyApi.getTracks([SpotifyApi.uriToId(data.uri)]).then(function (tracks) {
+                            this.cachedCurrentTrack = tracks[0];
+                            this.cachedCurrentTrack.timePlayed = 0;
+                            this.cachedCurrentTrack.timePlayedPercentage = 0;
+                            deferred.resolve(tracks[0]);
+                            this.changedCurrentTrack();
+                        }.bind(this), deferred.reject);
                     }
-                });
+                }.bind(this));
             } else {
-                d.resolve(that.cachedCurrentTrack);
+                deferred.resolve(this.cachedCurrentTrack);
             }
-
-            return d;
-        };
-
-        this.uriToId = function (uri) {
-            return uri.split(":")[2];
-        };
-
-        this.getAlbum = function (id) {
-            return $.ajax({
-                url: "https://api.spotify.com/v1/albums/" + id
-            });
-        };
-
-        this.getAlbumTracks = function (id) {
-            return $.ajax({
-                url: "https://api.spotify.com/v1/albums/" + id + "/tracks",
-                data: {
-                    "ids": ids.join(",")
-                }
-            });
-        };
-
-        this.getTracks = function (ids) {
-            /*
-             returns promised
-             response = {
-             tracks: []
-             };
-             */
-            //batch load tracks
-            var d;
-            if (ids == null || ids.length == 0) {
-                d = $.Deferred();
-                d.reject();
-                return d;
-            }
-
-            var idsSlice = ids.splice(0, 20);
-            var promises = [];
-            var response = {
-                tracks: []
-            };
-            while (idsSlice.length > 0) {
-                promises.push($.ajax({
-                    url: "https://api.spotify.com/v1/tracks",
-                    data: {
-                        "ids": idsSlice.join(",")
-                    }
-                }));
-                idsSlice = ids.splice(0, 20);
-            }
-            d = $.Deferred();
-            if (promises.length == 1) {
-                return promises[0]
-            }
-            $.when.apply($, promises).done(function () {
-                for (var i = 0; i < arguments.length; i++) {
-                    response.tracks.push.apply(response.tracks, arguments[i][0].tracks);
-                }
-                d.resolve(response);
-            });
-            return d
-        };
-
-        this.getArtist = function (artistId) {
-            return $.ajax({
-                url: "https://api.spotify.com/v1/artists/" + artistId
-            });
-        };
-
-        this.getArtistAlbums = function (artistId, offset) {
-            offset = offset || 0;
-            return $.ajax({
-                url: "https://api.spotify.com/v1/artists/" + artistId + "/albums",
-                data: {
-                    "album_type": "album,compilation",
-                    "limit": "50",
-                    "market": "AR",
-                    "offset": offset
-                }
-            });
-        };
-
-        this.getAlbums = function (ids) {
-            if (ids == null || ids.length == 0) {
-                var d = $.Deferred();
-                d.reject();
-                return d;
-            }
-
-            return $.ajax({
-                url: "https://api.spotify.com/v1/albums",
-                data: {
-                    "ids": ids.join(","),
-                    "market": "AR"
-                }
-            });
-        };
-
-        this.getArtistAndAlbums = function (artistId) {
-            var d = $.Deferred();
-            $.when(
-                this.getArtist(artistId),
-                this.getArtistAlbums(artistId)
-            ).done(function (artist, albums) {
-                    //artist and albums contains all the args from the deferred callback > [0]
-                    that.getAlbums(albums[0].items.map(function (d) {
-                        return d.id
-                    }))
-                        .done(function (response) {
-                            d.resolve(artist[0], response);
-                        });
-                });
-            return d;
-        };
-
-        this.apiSearch = function (query, offset) {
-            offset = offset || 0;
-            return $.ajax({
-                url: "https://api.spotify.com/v1/search",
-                data: {
-                    "type": "album,artist,track",
-                    "limit": "20",
-                    "market": "AR",
-                    "offset": offset,
-                    "q": query
-                }
-            });
+            return deferred;
         };
 
         this.queueAlbumUri = function (uri) {
-            this.getAlbum(this.uriToId(uri)).done(function (album) {
+            SpotifyApi.getAlbum(SpotifyApi.uriToId(uri)).done(function (album) {
                 for (var i = 0; i < album.tracks.items.length; i++) {
-                    that.queueTrackUri(album.tracks.items[i].uri);
+                    this.queueTrackUri(album.tracks.items[i].uri);
                 }
-            });
+            }.bind(this));
         };
 
         this.queueTrackUri = function (uri) {
@@ -310,33 +398,35 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
         };
 
         this.getQueueTracks = function (refreshCache) {
-            console.log("GET QUEUE S");
+            console.log("GET QUEUES");
             //prevent multiple calls to the server but allow multiple responses
             if (this.getQueueTracks_loading) { return this.getQueueTracks_loading }
 
             //return spotify tracks
-            var d = $.Deferred();
+            var deferred = $.Deferred();
 
-            if (refreshCache || !that.cachedQueueTracks) {
-                this.getQueueTracks_loading = d;
-                d.always(function () {
-                    that.getQueueTracks_loading = false;
+            if (refreshCache || !this.cachedQueueTracks) {
+                this.getQueueTracks_loading = deferred;
+                deferred.always(function () {
+                    this.getQueueTracks_loading = false;
+                }.bind(this));
+
+                this.getQueue().done(function (queueTracksUris) {
+                    SpotifyApi
+                        .getTracks(queueTracksUris.map(SpotifyApi.uriToId))
+                        .then(deferred.resolve, deferred.reject);
                 });
 
+                deferred.done(function (tracks) {
+                    this.cachedQueueTracks = tracks;
+                    this.changedQueue();
+                }.bind(this));
 
-                this.getQueue().done(function (r) {
-                    that.getTracks(r.map(that.uriToId)).then(d.resolve, d.reject);
-                });
-
-                d.done(function (tracks) {
-                    that.cachedQueueTracks = tracks;
-                    that.changedQueue();
-                });
             } else {
-                d.resolve(that.cachedQueueTracks);
+                deferred.resolve(this.cachedQueueTracks);
             }
 
-            return d;
+            return deferred;
         };
 
         this.saveQueueToPlaylist = function (playlist) {
@@ -392,7 +482,6 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
 
         return this
     };
-
 }]);
 
 

@@ -109,6 +109,7 @@ SpotifyPlayer = (function(){
     this.lame.on('format', console.log);
 
     this.login = function(){
+        if (login.disabled) { return }
         this.spotify = Spotify.login(username, password, function (err, spotify) {
             if (err) throw err;
             that.initialized = true;
@@ -389,7 +390,7 @@ app.get('/suggestion/', function(req, res){
     request({
         url: "https://www.musixmatch.com/ws/1.1/macro.search?app_id=community-app-v1.0&format=json&part=artist_image&page_size=10&q="+q,
         //url: "https://www.musixmatch.com/ws/1.1/macro.search",
-        strictSSL: false,
+        strictSSL: false
     }, function (error, response, body){
 
         try {

@@ -402,11 +402,13 @@ body {
   height: 100vh;
   overflow-y: scroll;
 }
+.main-wrap,
 .search-result {
   margin: 60px 300px 0 250px;
   padding: 15px;
 }
 @media only screen and (max-width : 992px) {
+  .main-wrap,
   .search-result {
     margin-left: 0;
   }
