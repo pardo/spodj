@@ -1,0 +1,19 @@
+<div class="row">
+	<div class="col-sm-4">
+		<h3>{{ search.album.name }} {{ search.album.artists[0].name }}</h3>
+		<img src="{{ search.album.images[1].url }}" />
+		<div class="btn-container">
+			<a ng-click="queueAlbum(search.album)" class="btn-default"> <i class="icon-add"></i> Agregar</a>
+		</div>
+	</div>
+	<div class="col-sm-8">
+		<table class=" table tracks">
+				<tr ng-repeat="track in search.album.tracks.items" ng-click="queueTrack(track)">
+					<td class="add"><i class="icon-add"></i></td>
+					<td class="track-name">{{ track.name }}</td>
+					<td class="hidden-sm album-name"><span>{{ search.album.artists[0].name }}</span></td>
+					<td>{{ track.duration_ms | msToSec }}</td>
+				</tr>
+		</table>
+	</div>
+</div>

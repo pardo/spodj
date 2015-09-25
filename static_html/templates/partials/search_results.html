@@ -1,0 +1,31 @@
+<p>Resultados de la busqueda</p>
+<div class="row">
+  <div class="col-lg-6">
+    <div class="artist_result_tiles">
+      <h3>Artistas</h3>
+        <a ng-href="#/artist/{{ artist.id }}" class="tile" ng-repeat="artist in search.artists.items">
+          <div ng-show="artist.images.length > 0" class="cover" ng-style="{ 'background-image': 'url(' + artist.images[0].url + ')' }"></div>
+          <div ng-show="artist.images.length == 0" class="cover" style="background-image: url('/img/non-image.jpg')"></div>
+          <p class="name" ng-bind="artist.name"></p>
+        </a>
+    </div>
+    <div class="album_result_tiles">
+      <h3>Albums</h3>
+        <a ng-href="#/album/{{ album.id }}" class="tile" ng-repeat="album in search.albums.items">
+          <div ng-show="album.images.length > 0" class="cover" ng-style="{ 'background-image': 'url(' + album.images[0].url + ')' }"></div>
+          <div ng-show="album.images.length == 0" class="cover" style="background-image: url('/img/non-image.jpg')"></div>
+          <p class="name" ng-bind="album.name"></p>
+        </a>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <h3>Canciones</h3>
+    <ul class="songs_result_list">
+        <li ng-repeat="track in search.tracks.items" ng-click="queueTrack(track)">
+          <span class="duration" ng-bind="track.duration_ms | msToSec"></span>
+          <i class="icon-add"></i>
+          <span>{{ track.name }} - {{ track.artists[0].name }}</span>
+        </li>
+    </ul>
+  </div>
+</div>

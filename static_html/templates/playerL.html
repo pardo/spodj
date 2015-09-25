@@ -17,7 +17,8 @@
 </head>
 <body class="app-widget" ng-app="PlayerApp">
 <span ng-controller="InitController"></span>
-<div ng-controller="AppController">
+
+<div ng-controller="AppController" ng-init="initAutocomplete()">
   <div id="header">
     <div class="container-fluid">
       <div class="row">
@@ -44,7 +45,7 @@
             </div> -->
             <div class="controls track">
               <div class="progress">
-                <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0;" played-time-el ></div>
+                <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" ng-style="{ 'width': currentTrack.timePlayedPercentage+'%' }"></div>
               </div>
             </div>
           </div>
@@ -54,9 +55,16 @@
   </div>
 
   <div class="playlist dark_bg">
-    <h3>playlists</h3>
-    <a href="" save-to-new-playlist-el>Save to new playlist</a>
-    <div playlists-el class="plalists-wrap">
+    <h3>Playlist</h3>
+    <a href="" ng-click="saveQueueToPlaylist()">Guardar en Playlist</a>
+    <div class="playlist-wrap">
+      <ul>
+        <li ng-repeat="playlist in playlists">
+          <a ng-href="#/playlist/{{ playlist._id }}">
+            {{ playlist.name }}({{ playlist.tracks.length }})
+          </a>
+        </li>
+      </ul>
     </div>
   </div>
 
@@ -77,7 +85,6 @@
 
     </div>
 
-
     <div class="qeue" ng-controller="QueueController">
       <ul ng-cloak>
         <li ng-repeat="track in tracks track by track.uri"
@@ -92,12 +99,11 @@
               <i class="icon-play-arrow" ng-show="track.uri == currentTrack.uri"></i>
               <span ng-bind="track.name"></span>
             </p>
-            <a href="#" class="artist" ng-click="navigateToArtist(track.artists)" ng-bind="track.artists[0].name"></a>
+            <a ng-href="#/artist/{{ track.artists[0].id }}" class="artist" ng-bind="track.artists[0].name"></a>
           </div>
         </li>
       </ul>
     </div>
-
   </div>
 
   <div class="main_content">

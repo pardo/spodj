@@ -1,0 +1,22 @@
+<h3>{{ search.artist.name }}</h3>
+
+<div ng-repeat="album in search.albums" class="row">
+  <div class="col-sm-4">
+    <h4>{{ album.name }} {{ album.release_date | albumDate }}</h4>
+    <img ng-src="{{ album.images[1].url }}" />
+    <div class="btn-container">
+      <a ng-click="queueAlbum(album)" class="btn-default"> <i class="icon-add"></i> Agregar</a>
+    </div>
+  </div>
+  <div class="col-sm-8">
+    <table class=" table tracks">
+      <tr ng-repeat="track in album.tracks.items" ng-click="queueTrack(track)">
+        <td class="add"><i class="icon-add"></i></td>
+        <td class="track-name">{{ track.name }} <span ng-show="track.explicit">[Puteado]</span></td>
+        <td class="hidden-sm album-name"><span>{{ album.name }}</span></td>
+        <td>{{ track.duration_ms | msToSec }}</td>
+      </tr>
+    </table>
+  </div>
+  <hr class="col-sm-12" />
+</div>

@@ -84,6 +84,7 @@ $(function(){
 
 
     AppWidget = (function(){
+        return
         var that = this;
         this.$el = $(".app-widget");
         this.$input = $("#search input");
@@ -559,7 +560,7 @@ $(function(){
         //PATHs
         return this;
     })();
-
+/*
     page('/search/:query', function(context){
         AppWidget.search(context.params.query);
     });
@@ -573,6 +574,6 @@ $(function(){
     });
 
     page();
-
+*/
 
 });

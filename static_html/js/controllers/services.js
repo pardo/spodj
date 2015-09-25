@@ -1,3 +1,73 @@
+PlayerApp.factory('Utils', function() {
+    var debounce = function (func, wait, immediate) {
+        var timeout, args, context, timestamp, result;
+
+        var later = function() {
+            var last = Date.now() - timestamp;
+
+            if (last < wait && last >= 0) {
+                timeout = setTimeout(later, wait - last);
+            } else {
+                timeout = null;
+                if (!immediate) {
+                    result = func.apply(context, args);
+                    if (!timeout) context = args = null;
+                }
+            }
+        };
+
+        return function() {
+            context = this;
+            args = arguments;
+            timestamp = Date.now();
+            var callNow = immediate && !timeout;
+            if (!timeout) timeout = setTimeout(later, wait);
+            if (callNow) {
+                result = func.apply(context, args);
+                context = args = null;
+            }
+
+            return result;
+        };
+    };
+    var throttle = function (func, wait, options) {
+        var context, args, result;
+        var timeout = null;
+        var previous = 0;
+        if (!options) options = {};
+        var later = function() {
+            previous = options.leading === false ? 0 : Date.now();
+            timeout = null;
+            result = func.apply(context, args);
+            if (!timeout) context = args = null;
+        };
+        return function() {
+            var now = Date.now();
+            if (!previous && options.leading === false) previous = now;
+            var remaining = wait - (now - previous);
+            context = this;
+            args = arguments;
+            if (remaining <= 0 || remaining > wait) {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                }
+                previous = now;
+                result = func.apply(context, args);
+                if (!timeout) context = args = null;
+            } else if (!timeout && options.trailing !== false) {
+                timeout = setTimeout(later, remaining);
+            }
+            return result;
+        };
+    };
+
+    return {
+        debounce: debounce,
+        throttle: throttle
+    }
+});
+
 PlayerApp.factory('PubSub', function () {
     console.log("--PubSub--");
 
@@ -102,6 +172,10 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
             name: this.name,
             tracks: this.tracks
         }
+    };
+
+    Playlist.prototype.play = function() {
+        $.ajax({ url: "/playlist/"+this._id+"/play/", type: "post" });
     };
 
     Playlist.prototype.save = function() {
@@ -293,6 +367,28 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
         });
     };
 
+    SpotifyApi.prototype.apiSearchExpanded = function (query) {
+        var deferred = $.Deferred();
+
+        this.apiSearch(query).then(function(response){
+            response.albums.items = response.albums.items.filter(function(d){
+                return d.available_markets.indexOf("AR") != -1;
+            });
+            response.tracks.items = response.tracks.items.filter(function(d){
+                return d.available_markets.indexOf("AR") != -1;
+            });
+
+            deferred.resolve({
+                albums: response.albums,
+                artists: response.artists,
+                tracks: response.tracks
+            });
+
+        }, deferred.reject);
+
+        return deferred;
+    };
+
     SpotifyApi = new SpotifyApi();
 
     return new function PlayerApi() {
@@ -321,7 +417,7 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
         };
 
         this.changedQueue = function () {
-            PubSub.publish('PlayerApi.queue', this.cachedQueueTracks.tracks);
+            PubSub.publish('PlayerApi.queue', this.cachedQueueTracks);
         };
 
         this.getCurrentTrack = function (refreshCache) {
@@ -437,12 +533,14 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
         };
 
         this.saveQueueToNewPlaylist = function (name) {
+            var d = $.Deferred();
             this.getQueue().done(function (r) {
                 var p = new Playlist();
                 p.name = name;
                 p.tracks = r;
-                p.save();
+                p.save().then(d.resolve, d.reject);
             });
+            return d;
         };
 
         this.getSuggestion = function (q) {
