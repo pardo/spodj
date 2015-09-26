@@ -385,7 +385,30 @@ app.get('/suggestion/wikipedia/', function(req, res){
 });
 
 
+
 app.get('/suggestion/', function(req, res){
+    var q = req.query.search;
+    request({
+        url: "http://www.last.fm/es/search?q="+q,
+        //url: "https://www.musixmatch.com/ws/1.1/macro.search",
+        strictSSL: false
+    }, function (error, response, body){
+        if (error) { return res.status(404).send('Not found'); }
+        var re = /href="\/.+music\/([\w\d\+]+)\/.*/gi;
+        var match = re.exec(body);
+        var result = [];
+        while (match != null) {
+            var artist = match[1].split("+").join(" ");
+            if (result.indexOf(artist) == -1) {
+                result.push(artist);
+            }
+            match = re.exec(body);
+        }
+        res.send(result);
+    });
+});
+
+app.get('/suggestion/musix/', function(req, res){
     var q = req.query.search;
     request({
         url: "https://www.musixmatch.com/ws/1.1/macro.search?app_id=community-app-v1.0&format=json&part=artist_image&page_size=10&q="+q,
@@ -394,6 +417,7 @@ app.get('/suggestion/', function(req, res){
     }, function (error, response, body){
 
         try {
+            debugger;
             var r = JSON.parse(body).message.body.macro_result_list.artist_list.reduce(function(a, d){
                 if (d.artist.artist_name < 65 || d.artist.artist_rating > 0){
                     a.push(d.artist.artist_name);

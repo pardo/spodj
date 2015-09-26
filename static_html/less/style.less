@@ -36,6 +36,9 @@
       background:lighten(@color, 15%);
    }
 }
+
+.keyframes(~'spin, from {transform:rotate(0deg);} to {transform:rotate(360deg);}');
+
 a.btn, .btn{
   &-default{
     .btn(@secondary);
@@ -108,6 +111,8 @@ body {
     border-radius: 26px;
     z-index: 101
   }
+
+  .loading-icon,
   .search-icon{
     position: absolute;
     top: 7px;
@@ -115,6 +120,24 @@ body {
     z-index: 102;
     font-size: 20px;
   }
+
+  .loading-icon{
+    i {
+      .animation(spin 1s linear infinite);
+    }
+    opacity: 0;
+  }
+
+  &.loading {
+    .loading-icon{
+      opacity: 1;
+    }
+    .search-icon{
+      opacity: 0;
+
+    }
+  }
+
   .twitter-typeahead{
     width: 100%;
   }
@@ -197,7 +220,7 @@ body {
 }
 
 /* Queue Column */
-.play-qeue{
+.play-queue{
   width:300px;
   height: ~'calc(100vh - 60px)';
   float: right;
@@ -210,12 +233,31 @@ body {
     width:100%;
     height: 305px;
     position: relative;
+
+    .old-cover,
     .cover{
-      max-width: 100%;
+      width: 100%;
+      height: 100%;
       position: absolute;
       top:0;
       left: 0;
+      .transition(0.3s all);
     }
+
+    .old-cover{
+      opacity: 0;
+      &[class*="old-track-remove"] {
+        opacity: 1;
+      }
+    }
+
+    .cover{
+      opacity: 1;
+      &[class*="new-track-add"] {
+       opacity: 0;
+      }
+    }
+
     .info{
       width: 100%;
       background: fade(@dark, 80%);
@@ -272,8 +314,9 @@ body {
   .duration{
     float: right;
   }
-  .qeue{
+  .queue{
     background: lighten(@dark, 10%);
+    .ul,
     ul{
       list-style: none;
       max-height:~'calc(100vh - 365px)';
@@ -284,10 +327,11 @@ body {
       overflow-y: scroll;
       position: relative;
 
+      .li,
       li{
         &.ng-leave.ng-leave-active,
         &.ng-enter{
-          .transition(0.5s all);
+          .transition(0.2s all);
           right: -100%;
         }
         &.ng-enter-stagger,
@@ -297,7 +341,7 @@ body {
         }
         &.ng-leave,
         &.ng-enter.ng-enter-active{
-          .transition(0.5s all);
+          .transition(0.2s all);
           right: 0%;
         }
 
@@ -339,6 +383,41 @@ body {
     }
   }
 }
+
+
+.as-sortable-dragging {
+ //.play-queue.queue.ul.li;
+ // position: inherit;
+
+  a.remove-track{
+    display: none;
+  }
+
+  .song{
+    .bold();
+    font-size: 16px;
+  }
+  a.artist{
+    padding: 0 10px;
+    color: @links;
+    cursor:pointer;
+    &:hover{
+      color: lighten(@links, 10%);
+    }
+  }
+  .duration{
+    float: right;
+  }
+
+
+  .track-info {
+    background: @dark;
+    padding: 5px 0;
+  }
+
+
+}
+
 /* Use this on the hovered element */
 .fade-in-transition(@fade-in-time: 0.5s, @fade-out-time: 0.5s, @fade-in-delay: 0.7s, @fade-out-delay: 0.3s){
   width:35px;

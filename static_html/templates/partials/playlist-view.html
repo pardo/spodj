@@ -10,7 +10,7 @@
 			<a ng-click="queuePlaylist(playlist)" class="btn-default"> <i class="icon-add"></i> Agregar</a>
 		</div>
     <ul class="songs_result_list">
-        <li ng-repeat="track in playlistTracks">
+        <li ng-repeat="track in playlistTracks" ng-click="queueTrack(track)">
           <span class="duration" ng-bind="track.duration_ms | msToSec"></span>
           <i class="icon-add"></i>
           <span>{{ track.name }} - {{ track.artists[0].name }}</span>

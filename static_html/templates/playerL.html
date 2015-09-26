@@ -5,11 +5,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-
+  <title>Spotdj</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="/css/normalize.css">
   <link rel="stylesheet" href="/css/bootstrap.css">
   <link rel="stylesheet" href="/css/icons.css">
+  <link rel="stylesheet" href="/js/lib/ng-sortable/ng-sortable.min.css">
   <link rel="stylesheet" href="/css/style.css">
   <style>
     [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {  display: none !important;  }
@@ -27,6 +28,7 @@
             <form action="">
               <input type="search" name="main-search" placeholder="Search for Song, Album or Artist">
               <span class="search-icon"><i class="icon-search"></i></span>
+              <span class="loading-icon"><i class="icon-sync"></i></span>
             </form>
           </div>
         </div>
@@ -68,15 +70,18 @@
     </div>
   </div>
 
-  <div class="play-qeue dark_bg">
+  <div class="play-queue dark_bg">
 
     <div ng-controller="PlayingNowController" class="playing-now">
 
-      <img ng-src="{{ currentTrack.album.images[1].url }}" class="cover">
+      <img class="{{ currentTrack.id }}-new-track cover" ng-src="{{ currentTrack.album.images[1].url }}" />
+      <img class="{{ oldTrack.id }}-old-track old-cover" ng-src="{{ oldTrack.album.images[1].url }}" />
+
       <div class="info">
         <p class="song" ng-bind="currentTrack.name"></p>
         <p class="artist" ng-bind="currentTrack.artists[0].name"></p>
       </div>
+
       <div class="progress_cont">
         <div class="progress">
           <div class="progress-bar" role="progressbar" ng-style="{ 'width': currentTrack.timePlayedPercentage+'%' }"></div>
@@ -85,15 +90,16 @@
 
     </div>
 
-    <div class="qeue" ng-controller="QueueController">
-      <ul ng-cloak>
+    <div class="queue" ng-controller="QueueController">
+      <ul ng-cloak as-sortable="dragQueueListeners" ng-model="tracks">
         <li ng-repeat="track in tracks track by track.uri"
+            as-sortable-item
             ng-class="{
                   'active': track.uri == currentTrack.uri
                 }"
             >
           <a href="#" class="remove-track" ng-click="removeTrack(track)"><i class="icon-clear"></i></a>
-          <div class="track-info">
+          <div class="track-info" as-sortable-item-handle>
             <p class="duration" ng-bind="track.duration_ms | msToSec"></p>
             <p class="song" ng-click="queueChangeTo($index)">
               <i class="icon-play-arrow" ng-show="track.uri == currentTrack.uri"></i>
@@ -118,6 +124,7 @@
 <script src="/js/lib/angular.min.js"></script>
 <script src="/js/lib/angular-animate.min.js"></script>
 <script src="/js/lib/angular-route.min.js"></script>
+<script src="/js/lib/ng-sortable/ng-sortable.js"></script>
 
 <script src="/js/controllers/app.js"></script>
 <script src="/js/controllers/services.js"></script>

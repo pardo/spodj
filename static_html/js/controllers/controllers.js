@@ -4,9 +4,11 @@ PlayerApp.controller('AppController', [ '$scope', '$timeout', 'PlayerApi', 'PubS
     $scope.$el = $('[ng-controller="AppController"]');
 
     $scope.currentTrack = null;
+    $scope.oldTrack = null;
     $scope.playlists = [];
 
     $scope.initAutocomplete = function () {
+        var $search = $("#search");
         var $input = $("#search input");
         var suggestionSource = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
@@ -14,7 +16,17 @@ PlayerApp.controller('AppController', [ '$scope', '$timeout', 'PlayerApi', 'PubS
             rateLimitWait: 400,
             remote: {
                 url: '/suggestion/?search=%QUERY',
-                wildcard: '%QUERY'
+                wildcard: '%QUERY',
+                prepare: function(query, settings) {
+                    var wildcard = '%QUERY';
+                    $search.addClass("loading");
+                    settings.url = settings.url.replace(wildcard, encodeURIComponent(query));
+                    return settings;
+                },
+                transform: function(response){
+                    $search.removeClass("loading");
+                    return response;
+                }
             }
         });
 
@@ -58,8 +70,10 @@ PlayerApp.controller('AppController', [ '$scope', '$timeout', 'PlayerApi', 'PubS
         $timeout();
     });
 
-    PubSub.subscribe("PlayerApi.currentTrack", function (currentTrack) {
+    PubSub.subscribe("PlayerApi.currentTrack", function (currentTrack, oldTrack) {
         $scope.currentTrack = currentTrack;
+        $("title").html(currentTrack.name+' - '+currentTrack.artists[0].name);
+        $scope.oldTrack = oldTrack;
         $timeout();
     });
 
@@ -80,6 +94,16 @@ PlayerApp
         $scope.tracks = [];
         $scope.currentTrack = null;
 
+        $scope.dragQueueListeners = {
+            itemMoved: function (event) {
+            //Do what you want},
+            },
+            orderChanged: function(event) {
+            //Do what you want},
+            }
+        };
+
+
         PlayerApi.getCurrentTrack().then(function(currentTrack){
             $timeout(function () {
                 $scope.currentTrack = currentTrack;
@@ -93,9 +117,8 @@ PlayerApp
         });
 
         PubSub.subscribe("PlayerApi.currentTrack", function (currentTrack) {
-            $timeout(function () {
-                $scope.currentTrack = currentTrack;
-            });
+            $scope.currentTrack = currentTrack;
+            $timeout();
         });
 
         PubSub.subscribe("PlayerApi.queue", function (tracks) {
@@ -155,6 +178,10 @@ PlayerApp
             });
         });
 
+        $scope.queueTrack = function (track) {
+            PlayerApi.queueTrackUri(track.uri);
+        };
+
         $scope.queuePlaylist = function (playlist) {
             PlayerApi.queueTracksFromPlaylist(playlist);
         };
@@ -168,16 +195,14 @@ PlayerApp
     ['$scope', '$timeout', '$routeParams', 'PlayerApi', 'PubSub', function ($scope, $timeout, $routeParams, PlayerApi, PubSub) {
         $scope.search = {};
 
-
         if ($routeParams.artistId) {
             PlayerApi.SpotifyApi.getArtistAndAlbums($routeParams.artistId).done(function(artist, albums){
                 $scope.search = {
-                    albums: albums.albums,
+                    albums: albums,
                     artist: artist
                 };
                 $timeout();
             });
-
         }
 
         if ($routeParams.albumId) {

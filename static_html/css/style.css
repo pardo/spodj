@@ -19,6 +19,13 @@
   font-weight: 900;
   font-style: normal;
 }
+lesshat-selector {
+  -lh-property: 0; } 
+@-webkit-keyframes spin{ from {-webkit-transform:rotate(0deg);} to {-webkit-transform:rotate(360deg);}}
+@-moz-keyframes spin{ from {-moz-transform:rotate(0deg);} to {-moz-transform:rotate(360deg);}}
+@-o-keyframes spin{ from {-o-transform:rotate(0deg);} to {-o-transform:rotate(360deg);}}
+@keyframes spin{ from {-webkit-transform:rotate(0deg);-moz-transform:rotate(0deg);-ms-transform:rotate(0deg);transform:rotate(0deg);} to {-webkit-transform:rotate(360deg);-moz-transform:rotate(360deg);-ms-transform:rotate(360deg);transform:rotate(360deg);};
+}
 a.btn-default,
 .btn-default {
   color: #fff;
@@ -138,12 +145,28 @@ body {
   border-radius: 26px;
   z-index: 101;
 }
+#search .loading-icon,
 #search .search-icon {
   position: absolute;
   top: 7px;
   right: 10px;
   z-index: 102;
   font-size: 20px;
+}
+#search .loading-icon {
+  opacity: 0;
+}
+#search .loading-icon i {
+  -webkit-animation: spin 1s linear infinite;
+  -moz-animation: spin 1s linear infinite;
+  -o-animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
+}
+#search.loading .loading-icon {
+  opacity: 1;
+}
+#search.loading .search-icon {
+  opacity: 0;
 }
 #search .twitter-typeahead {
   width: 100%;
@@ -222,7 +245,7 @@ body {
   }
 }
 /* Queue Column */
-.play-qeue {
+.play-queue {
   width: 300px;
   height: calc(100vh - 60px);
   float: right;
@@ -231,19 +254,37 @@ body {
   top: 60px;
   right: 0;
 }
-.play-qeue .playing-now {
+.play-queue .playing-now {
   background: url('/img/non-image.jpg') no-repeat;
   width: 100%;
   height: 305px;
   position: relative;
 }
-.play-qeue .playing-now .cover {
-  max-width: 100%;
+.play-queue .playing-now .old-cover,
+.play-queue .playing-now .cover {
+  width: 100%;
+  height: 100%;
   position: absolute;
   top: 0;
   left: 0;
+  -webkit-transition: 0.3s all;
+  -moz-transition: 0.3s all;
+  -o-transition: 0.3s all;
+  transition: 0.3s all;
 }
-.play-qeue .playing-now .info {
+.play-queue .playing-now .old-cover {
+  opacity: 0;
+}
+.play-queue .playing-now .old-cover[class*="old-track-remove"] {
+  opacity: 1;
+}
+.play-queue .playing-now .cover {
+  opacity: 1;
+}
+.play-queue .playing-now .cover[class*="new-track-add"] {
+  opacity: 0;
+}
+.play-queue .playing-now .info {
   width: 100%;
   background: rgba(38, 47, 57, 0.8);
   /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#7db9e8+0,000000+100&amp;0+0,1+100 */
@@ -268,13 +309,13 @@ body {
   margin: 0;
   text-shadow: 0px 0px 6px #000;
 }
-.play-qeue .playing-now .progress_cont {
+.play-queue .playing-now .progress_cont {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
 }
-.play-qeue .playing-now .progress {
+.play-queue .playing-now .progress {
   height: 5px;
   margin-bottom: 0;
   -webkit-border-radius: 0;
@@ -284,72 +325,98 @@ body {
   border-radius: 0;
   background-clip: padding-box;
 }
-.play-qeue .playing-now .progress .progress-bar {
+.play-queue .playing-now .progress .progress-bar {
   background: #ca2a2a;
   -webkit-transition: none;
   -moz-transition: none;
   transition: none;
 }
-.play-qeue p {
+.play-queue p {
   margin: 0;
   padding: 0 10px;
 }
-.play-qeue .song {
+.play-queue .song {
   font-family: 'sen', "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: 700;
   font-size: 16px;
 }
-.play-qeue a.artist {
+.play-queue a.artist {
   padding: 0 10px;
   color: #668cb7;
   cursor: pointer;
 }
-.play-qeue a.artist:hover {
+.play-queue a.artist:hover {
   color: #89a6c7;
 }
-.play-qeue .duration {
+.play-queue .duration {
   float: right;
 }
-.play-qeue .qeue {
+.play-queue .queue {
   background: #3a4858;
 }
-.play-qeue .qeue ul {
+.play-queue .queue .ul,
+.play-queue .queue ul {
   list-style: none;
   max-height: calc(100vh - 365px);
   overflow-y: scroll;
   position: relative;
 }
-.play-qeue .qeue ul::-webkit-scrollbar {
+.play-queue .queue .ul::-webkit-scrollbar,
+.play-queue .queue ul::-webkit-scrollbar {
   width: 0;
   height: 0;
 }
-.play-qeue .qeue ul li {
+.play-queue .queue .ul .li,
+.play-queue .queue ul .li,
+.play-queue .queue .ul li,
+.play-queue .queue ul li {
   border-bottom: 1px solid #1c222a;
   perspective: 1000px;
   position: relative;
 }
-.play-qeue .qeue ul li.ng-leave.ng-leave-active,
-.play-qeue .qeue ul li.ng-enter {
-  -webkit-transition: 0.5s all;
-  -moz-transition: 0.5s all;
-  -o-transition: 0.5s all;
-  transition: 0.5s all;
+.play-queue .queue .ul .li.ng-leave.ng-leave-active,
+.play-queue .queue ul .li.ng-leave.ng-leave-active,
+.play-queue .queue .ul li.ng-leave.ng-leave-active,
+.play-queue .queue ul li.ng-leave.ng-leave-active,
+.play-queue .queue .ul .li.ng-enter,
+.play-queue .queue ul .li.ng-enter,
+.play-queue .queue .ul li.ng-enter,
+.play-queue .queue ul li.ng-enter {
+  -webkit-transition: 0.2s all;
+  -moz-transition: 0.2s all;
+  -o-transition: 0.2s all;
+  transition: 0.2s all;
   right: -100%;
 }
-.play-qeue .qeue ul li.ng-enter-stagger,
-.play-qeue .qeue ul li.ng-leave-stagger {
+.play-queue .queue .ul .li.ng-enter-stagger,
+.play-queue .queue ul .li.ng-enter-stagger,
+.play-queue .queue .ul li.ng-enter-stagger,
+.play-queue .queue ul li.ng-enter-stagger,
+.play-queue .queue .ul .li.ng-leave-stagger,
+.play-queue .queue ul .li.ng-leave-stagger,
+.play-queue .queue .ul li.ng-leave-stagger,
+.play-queue .queue ul li.ng-leave-stagger {
   transition-delay: 0.1s;
   transition-duration: 0s;
 }
-.play-qeue .qeue ul li.ng-leave,
-.play-qeue .qeue ul li.ng-enter.ng-enter-active {
-  -webkit-transition: 0.5s all;
-  -moz-transition: 0.5s all;
-  -o-transition: 0.5s all;
-  transition: 0.5s all;
+.play-queue .queue .ul .li.ng-leave,
+.play-queue .queue ul .li.ng-leave,
+.play-queue .queue .ul li.ng-leave,
+.play-queue .queue ul li.ng-leave,
+.play-queue .queue .ul .li.ng-enter.ng-enter-active,
+.play-queue .queue ul .li.ng-enter.ng-enter-active,
+.play-queue .queue .ul li.ng-enter.ng-enter-active,
+.play-queue .queue ul li.ng-enter.ng-enter-active {
+  -webkit-transition: 0.2s all;
+  -moz-transition: 0.2s all;
+  -o-transition: 0.2s all;
+  transition: 0.2s all;
   right: 0%;
 }
-.play-qeue .qeue ul li a.remove-track {
+.play-queue .queue .ul .li a.remove-track,
+.play-queue .queue ul .li a.remove-track,
+.play-queue .queue .ul li a.remove-track,
+.play-queue .queue ul li a.remove-track {
   position: absolute;
   left: 5px;
   font-size: 25px;
@@ -363,10 +430,16 @@ body {
   -o-transition: width 0.5s 0.3s, opacity 0.5s;
   transition: width 0.5s 0.3s, opacity 0.5s;
 }
-.play-qeue .qeue ul li.active .track-info {
+.play-queue .queue .ul .li.active .track-info,
+.play-queue .queue ul .li.active .track-info,
+.play-queue .queue .ul li.active .track-info,
+.play-queue .queue ul li.active .track-info {
   background: #3a4858;
 }
-.play-qeue .qeue ul li .track-info {
+.play-queue .queue .ul .li .track-info,
+.play-queue .queue ul .li .track-info,
+.play-queue .queue .ul li .track-info,
+.play-queue .queue ul li .track-info {
   background: #262f39;
   transform-origin: 100% 50%;
   transform: rotateY(0deg);
@@ -376,7 +449,10 @@ body {
   transition: -webkit-transform 0.5s 0.3s,-moz-transform 0.5s 0.3s,-o-transform 0.5s 0.3s,transform 0.5s 0.3s, background-image 0.5s 0.3s;
   padding: 5px 0;
 }
-.play-qeue .qeue ul li:hover a {
+.play-queue .queue .ul .li:hover a,
+.play-queue .queue ul .li:hover a,
+.play-queue .queue .ul li:hover a,
+.play-queue .queue ul li:hover a {
   width: 35px;
   opacity: 1;
   -webkit-transition: width 0.5s 0.7s, opacity 0.5s 0.7s;
@@ -384,13 +460,39 @@ body {
   -o-transition: width 0.5s 0.7s, opacity 0.5s 0.7s;
   transition: width 0.5s 0.7s, opacity 0.5s 0.7s;
 }
-.play-qeue .qeue ul li:hover .track-info {
+.play-queue .queue .ul .li:hover .track-info,
+.play-queue .queue ul .li:hover .track-info,
+.play-queue .queue .ul li:hover .track-info,
+.play-queue .queue ul li:hover .track-info {
   background: #1c222a;
   transform: rotateY(-22deg);
   -webkit-transition: -webkit-transform 0.5s 0.7s, background-image 0.5s 0.7s;
   -moz-transition: -moz-transform 0.5s 0.7s, background-image 0.5s 0.7s;
   -o-transition: -o-transform 0.5s 0.7s, background-image 0.5s 0.7s;
   transition: -webkit-transform 0.5s 0.7s,-moz-transform 0.5s 0.7s,-o-transform 0.5s 0.7s,transform 0.5s 0.7s, background-image 0.5s 0.7s;
+}
+.as-sortable-dragging a.remove-track {
+  display: none;
+}
+.as-sortable-dragging .song {
+  font-family: 'sen', "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+}
+.as-sortable-dragging a.artist {
+  padding: 0 10px;
+  color: #668cb7;
+  cursor: pointer;
+}
+.as-sortable-dragging a.artist:hover {
+  color: #89a6c7;
+}
+.as-sortable-dragging .duration {
+  float: right;
+}
+.as-sortable-dragging .track-info {
+  background: #262f39;
+  padding: 5px 0;
 }
 /* Use this on the hovered element */
 /* Use this on the normal state */

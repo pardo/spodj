@@ -322,19 +322,48 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
     };
 
     SpotifyApi.prototype.getAlbums = function (ids) {
+        var deferred;
+
         if (ids == null || ids.length == 0) {
-            var d = $.Deferred();
-            d.reject();
-            return d;
+            deferred = $.Deferred();
+            deferred.reject();
+            return deferred;
         }
 
-        return $.ajax({
-            url: "https://api.spotify.com/v1/albums",
-            data: {
-                "ids": ids.join(","),
-                "market": "AR"
+        var idsSlice = ids.splice(0, 20);
+        var promises = [];
+        var albums = [];
+
+        while (idsSlice.length > 0) {
+            promises.push($.ajax({
+                url: "https://api.spotify.com/v1/albums",
+                data: {
+                    "market": "AR",
+                    "ids": idsSlice.join(",")
+                }
+            }));
+            idsSlice = ids.splice(0, 20);
+        }
+
+        deferred = $.Deferred();
+
+        if (promises.length == 1) {
+            promises[0].done(function (response) {
+                deferred.resolve(response.albums);
+            });
+            return deferred;
+        }
+
+        $.when.apply($, promises).done(function () {
+            for (var i = 0; i < arguments.length; i++) {
+                albums.push.apply(albums, arguments[i][0].albums);
             }
+            deferred.resolve(albums);
         });
+
+        return deferred
+
+
     };
 
     SpotifyApi.prototype.getArtistAndAlbums = function (artistId) {
@@ -346,8 +375,8 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
                 //artist and albums contains all the args from the deferred callback > [0]
                 this.getAlbums(albums[0].items.map(function (d) {
                     return d.id
-                })).done(function (response) {
-                    d.resolve(artist[0], response);
+                })).done(function (albums) {
+                    d.resolve(artist[0], albums);
                 });
             }.bind(this));
         return d;

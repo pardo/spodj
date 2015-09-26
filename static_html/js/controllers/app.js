@@ -11,7 +11,7 @@ angular.module('PlayerAppFilters', [])
     });
 
 
-PlayerApp = angular.module("PlayerApp", ['PlayerAppFilters', 'ngAnimate', 'ngRoute' ]);
+PlayerApp = angular.module("PlayerApp", ['PlayerAppFilters', 'ngAnimate', 'ngRoute', 'as.sortable']);
 
 
 PlayerApp.config(['$routeProvider',
