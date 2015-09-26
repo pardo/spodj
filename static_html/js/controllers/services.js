@@ -232,6 +232,11 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
     };
 
     var SpotifyApi = function () {
+        this.tracksCache = {};
+        this.albumsCache = {};
+        this.artistsCache = {};
+        this.artistsAlbumsCache = {};
+        this.searchCache = {};
     };
 
     SpotifyApi.prototype.uriToId = function (uri) {
@@ -241,9 +246,19 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
 
 
     SpotifyApi.prototype.getAlbum = function (id) {
+        var deferred = null;
+        if (this.albumsCache[id]) {
+            deferred = $.Deferred();
+            deferred.resolve(this.albumsCache[id]);
+            return deferred;
+        }
         return $.ajax({
             url: "https://api.spotify.com/v1/albums/" + id
-        });
+        }).then(function (album) {
+            this.albumsCache[id] = album;
+            return album
+        }.bind(this));
+
     };
 
     SpotifyApi.prototype.getAlbumTracks = function (id) {
@@ -268,11 +283,29 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
             deferred.reject();
             return deferred;
         }
-
-        var idsSlice = ids.splice(0, 20);
         var promises = [];
         var tracks = [];
 
+        var filteredIds = [];
+
+        for (var i = 0; i < ids.length; i++) {
+            var key = ids[i];
+            if (this.tracksCache[key]) {
+                tracks.push(this.tracksCache[key]);
+            } else {
+                filteredIds.push(key);
+            }
+        }
+
+        //loadded from cache
+        if (filteredIds.length == 0) {
+            deferred = $.Deferred();
+            deferred.resolve(tracks);
+            return deferred;
+        }
+
+        //batch load
+        var idsSlice = filteredIds.splice(0, 20);
         while (idsSlice.length > 0) {
             promises.push($.ajax({
                 url: "https://api.spotify.com/v1/tracks",
@@ -280,36 +313,61 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
                     "ids": idsSlice.join(",")
                 }
             }));
-            idsSlice = ids.splice(0, 20);
+            idsSlice = filteredIds.splice(0, 20);
         }
 
         deferred = $.Deferred();
 
         if (promises.length == 1) {
             promises[0].done(function (response) {
-                deferred.resolve(response.tracks);
+                tracks.push.apply(tracks, response.tracks);
+                deferred.resolve(tracks);
             });
-            return deferred;
+        } else {
+            $.when.apply($, promises).done(function () {
+                for (var i = 0; i < arguments.length; i++) {
+                    tracks.push.apply(tracks, arguments[i][0].tracks);
+                }
+                deferred.resolve(tracks);
+            });
         }
 
-        $.when.apply($, promises).done(function () {
-            for (var i = 0; i < arguments.length; i++) {
-                tracks.push.apply(tracks, arguments[i][0].tracks);
+        //do cache
+        deferred.then(function (tracks) {
+            for (var i = 0; i < tracks.length; i++) {
+                this.tracksCache[tracks[i].id] = tracks[i];
             }
-            deferred.resolve(tracks);
-        });
+        }.bind(this));
+
 
         return deferred
     };
 
     SpotifyApi.prototype.getArtist = function (artistId) {
+        var deferred = null;
+        if (this.artistsCache[artistId]) {
+            deferred = $.Deferred();
+            deferred.resolve(this.artistsCache[artistId]);
+            return deferred;
+        }
+
         return $.ajax({
             url: "https://api.spotify.com/v1/artists/" + artistId
-        });
+        }).then(function (artist) {
+            this.artistsCache[artistId] = artist;
+            return artist
+        }.bind(this));
     };
 
     SpotifyApi.prototype.getArtistAlbums = function (artistId, offset) {
         offset = offset || 0;
+        var deferred;
+        if (this.artistsAlbumsCache[artistId]) {
+            deferred = $.Deferred();
+            deferred.resolve(this.artistsAlbumsCache[artistId]);
+            return deferred;
+        }
+
         return $.ajax({
             url: "https://api.spotify.com/v1/artists/" + artistId + "/albums",
             data: {
@@ -318,7 +376,10 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
                 "market": "AR",
                 "offset": offset
             }
-        });
+        }).then(function (albums) {
+            this.artistsAlbumsCache[artistId] = albums;
+            return albums
+        }.bind(this));
     };
 
     SpotifyApi.prototype.getAlbums = function (ids) {
@@ -330,10 +391,29 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
             return deferred;
         }
 
-        var idsSlice = ids.splice(0, 20);
         var promises = [];
         var albums = [];
 
+        var filteredIds = [];
+
+        for (var i = 0; i < ids.length; i++) {
+            var key = ids[i];
+            if (this.albumsCache[key]) {
+                albums.push(this.albumsCache[key]);
+            } else {
+                filteredIds.push(key);
+            }
+        }
+
+        //loadded from cache
+        if (filteredIds.length == 0) {
+            deferred = $.Deferred();
+            deferred.resolve(albums);
+            return deferred;
+        }
+
+        //batch load
+        var idsSlice = filteredIds.splice(0, 20);
         while (idsSlice.length > 0) {
             promises.push($.ajax({
                 url: "https://api.spotify.com/v1/albums",
@@ -342,24 +422,32 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
                     "ids": idsSlice.join(",")
                 }
             }));
-            idsSlice = ids.splice(0, 20);
+            idsSlice = filteredIds.splice(0, 20);
         }
 
         deferred = $.Deferred();
 
         if (promises.length == 1) {
             promises[0].done(function (response) {
-                deferred.resolve(response.albums);
+                albums.push.apply(albums, response.albums);
+                deferred.resolve(albums);
             });
-            return deferred;
+        } else {
+            $.when.apply($, promises).done(function () {
+                for (var i = 0; i < arguments.length; i++) {
+                    albums.push.apply(albums, arguments[i][0].albums);
+                }
+                deferred.resolve(albums);
+            });
         }
 
-        $.when.apply($, promises).done(function () {
-            for (var i = 0; i < arguments.length; i++) {
-                albums.push.apply(albums, arguments[i][0].albums);
+        //do cache
+        deferred.then(function (albums) {
+            for (var i = 0; i < albums.length; i++) {
+                this.albumsCache[albums[i].id] = albums[i];
             }
-            deferred.resolve(albums);
-        });
+        }.bind(this));
+
 
         return deferred
 
@@ -373,10 +461,10 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
             this.getArtistAlbums(artistId)
         ).done(function (artist, albums) {
                 //artist and albums contains all the args from the deferred callback > [0]
-                this.getAlbums(albums[0].items.map(function (d) {
+                this.getAlbums(albums.items.map(function (d) {
                     return d.id
                 })).done(function (albums) {
-                    d.resolve(artist[0], albums);
+                    d.resolve(artist, albums);
                 });
             }.bind(this));
         return d;
@@ -384,6 +472,14 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
 
     SpotifyApi.prototype.apiSearch = function (query, offset) {
         offset = offset || 0;
+        var deferred = null;
+        query = query.toLowerCase();
+        if (this.searchCache[query]) {
+            deferred = $.Deferred();
+            deferred.resolve(this.searchCache[query]);
+            return deferred;
+        }
+
         return $.ajax({
             url: "https://api.spotify.com/v1/search",
             data: {
@@ -393,7 +489,10 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
                 "offset": offset,
                 "q": query
             }
-        });
+        }).then(function (results) {
+            this.searchCache[query] = results;
+            return results
+        }.bind(this));
     };
 
     SpotifyApi.prototype.apiSearchExpanded = function (query) {
