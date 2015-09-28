@@ -52,6 +52,9 @@ PlayerApp.controller('AppController', [ '$scope', '$timeout', 'PlayerApi', 'PubS
     $scope.isPaused = function () {
         return PlayerApi.isPaused;
     };
+    $scope.nextTrack = function () {
+        PlayerApi.nextTrack();
+    };
 
     $scope.saveQueueToPlaylist = function () {
         var name = prompt("Nombre de la Playlist").trim();

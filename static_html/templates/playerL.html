@@ -35,10 +35,10 @@
         <div class="col-sm-6">
           <div class="player">
             <div class="controls main">
-              <a href="" class="prev"><i data-player-prev class="icon-skip-previous"></i></a>
-              <a ng-cloak ng-hide="isPaused()" ng-click="trackPause()" href="" class="pause"><i data-player-pause class="icon-pause circle"></i></a>
-              <a ng-show="isPaused()" ng-click="trackPlay()" href="" class="play"><i data-player-play class="icon-play-arrow circle"></i></a>
-              <a href="" class="next"><i data-player-next class="icon-skip-next"></i></a>
+              <!-- <a href="" class="prev"><i class="icon-skip-previous"></i></a> -->
+              <a ng-cloak ng-hide="isPaused()" ng-click="trackPause()" class="pause"><i class="icon-pause circle"></i></a>
+              <a ng-show="isPaused()" ng-click="trackPlay()" class="play"><i class="icon-play-arrow circle"></i></a>
+              <a ng-click="nextTrack()" class="next"><i class="icon-skip-next"></i></a>
             </div>
             <!-- <div class="controls volume">
               <div class="form-group">
