@@ -18,6 +18,8 @@ var Lame = require('lame');
 var Speaker = require('speaker');
 var Spotify = require('spotify-web');
 var Throttle = require('throttle');
+var shape = require('shaper');
+
 
 
 // Spotify credentials...
@@ -100,7 +102,8 @@ SpotifyPlayer = (function(){
     this.playLoopId = null;
     this.tracksQueue = null;
 
-    this.BIT_RATE = 160000; // Spotify web standard bit rate
+    //this.BIT_RATE = 160000; // Spotify web standard bit rate
+    this.BIT_RATE = 170000;
     // Lame decoder & speaker objects
     this.lame = new Lame.Decoder();
     // pipe() returns destination stream
@@ -141,6 +144,14 @@ SpotifyPlayer = (function(){
         }, 700);
     };
 
+    this.isPaused = function () {
+        try {
+            return this.throttledStream.paused;
+        } catch(e) {
+            return false;
+        }
+    };
+
     this.pause = function(){
         if (this.throttledStream != null) { this.throttledStream.pause() }
         that.lastTime = null;
@@ -148,7 +159,11 @@ SpotifyPlayer = (function(){
     };
 
     this.resume = function(){
-        if (this.throttledStream != null) { this.throttledStream.resume() }
+        if (this.throttledStream != null) {
+            this.throttledStream.reshape(that.BIT_RATE/8);
+            this.throttledStream.startTime = Date.now() -500;
+            this.throttledStream.resume();
+        }
         that.lastTime = null;
         io.emit("player.resume");
     };
@@ -158,7 +173,7 @@ SpotifyPlayer = (function(){
         if (this.throttledStream != null) {
             this.throttledStream.pause();
             this.throttledStream.removeAllListeners("data");
-            this.throttledStream.unpipe();
+            //this.throttledStream.unpipe();
         }
 
         if (this.spotifyStream != null) {
@@ -188,7 +203,8 @@ SpotifyPlayer = (function(){
     this._syncTimePlayer = function(){
         io.emit("player.time", {
             uri: that.currentTrack,
-            timePlayed: that.trackTimePlayed
+            timePlayed: that.trackTimePlayed,
+            isPaused: that.isPaused()
         });
     };
 
@@ -213,7 +229,10 @@ SpotifyPlayer = (function(){
                 that.skip(true);
             }
             that.spotifyStream = track.play();
-            that.throttledStream = that.spotifyStream.pipe(new Throttle(that.BIT_RATE/8)); // convert to bytes per second
+
+            //that.throttledStream = that.spotifyStream.pipe(new Throttle(that.BIT_RATE/8)); // convert to bytes per second
+            that.throttledStream = that.spotifyStream.pipe(shape(that.BIT_RATE/8)); // convert to bytes per second
+
             // manually write data to the decoder stream,
             // which is a writeable stream
 
@@ -246,6 +265,19 @@ TracksQueue = (function(){
     this.queueIndex = -1;
 
     this.shuffle = function(){};
+
+    this.swap = function(source, dest) {
+        if (this.tracksUris[source] && this.tracksUris[dest]) {
+            var tmp = this.tracksUris[source];
+            this.tracksUris[source] = this.tracksUris[dest];
+            this.tracksUris[dest] = tmp;
+            io.emit("queue.swap", {
+                dest: this.tracksUris[source],
+                source: this.tracksUris[dest]
+            });
+        }
+
+    };
 
     this.pushTrackUriAfterCurrent = function(uri){
         if (this.tracksUris.indexOf(uri) != -1) {
@@ -322,7 +354,8 @@ app.get('/track/', function(req, res){
     res.send({
         uri: SpotifyPlayer.currentTrack,
         queueIndex: TracksQueue.queueIndex,
-        timePlayed: SpotifyPlayer.trackTimePlayed
+        timePlayed: SpotifyPlayer.trackTimePlayed,
+        isPaused: SpotifyPlayer.isPaused()
     });
 });
 
@@ -333,6 +366,14 @@ app.get('/queue/', function(req, res){
 app.post('/queue/', function(req, res){
     var uri = req.body.uri;
     TracksQueue.pushTrackUri(uri);
+    res.send("OK");
+});
+
+app.post('/queue/swap/', function(req, res){
+    TracksQueue.swap(
+        parseInt(req.body.source),
+        parseInt(req.body.dest)
+    );
     res.send("OK");
 });
 

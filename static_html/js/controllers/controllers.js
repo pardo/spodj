@@ -49,6 +49,10 @@ PlayerApp.controller('AppController', [ '$scope', '$timeout', 'PlayerApi', 'PubS
         });
     };
 
+    $scope.isPaused = function () {
+        return PlayerApi.isPaused;
+    };
+
     $scope.saveQueueToPlaylist = function () {
         var name = prompt("Nombre de la Playlist").trim();
         if (name !="") {
@@ -64,6 +68,10 @@ PlayerApp.controller('AppController', [ '$scope', '$timeout', 'PlayerApi', 'PubS
             $timeout();
         });
     };
+
+    $scope.trackPlay = function () { PlayerApi.play() };
+    $scope.trackPause = function () { PlayerApi.pause() };
+
 
     PlayerApi.getCurrentTrack().then(function(currentTrack){
         $scope.currentTrack = currentTrack;
@@ -94,12 +102,21 @@ PlayerApp
         $scope.tracks = [];
         $scope.currentTrack = null;
 
+        var containment =  $('[as-sortable="dragQueueListeners"]');
         $scope.dragQueueListeners = {
-            itemMoved: function (event) {
-            //Do what you want},
-            },
             orderChanged: function(event) {
-            //Do what you want},
+                PlayerApi.swap(event.source.index, event.dest.index);
+            },
+            dragMove: function (itemPosition, body, eventObj) {
+                var containmentTop = containment.position().top;
+                var containmentBottom = containment.height()+containmentTop;
+                if ( (containmentBottom - itemPosition.nowY) < 20 ) {
+                    containment.scrollTop(containment.scrollTop()+10);
+                }
+                if ( (containmentTop - itemPosition.nowY) > -80 ) {
+                    containment.scrollTop(containment.scrollTop()-10);
+                }
+
             }
         };
 

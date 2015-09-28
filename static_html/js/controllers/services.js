@@ -523,12 +523,13 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
         var that = this;
         this.Playlist = Playlist;
         this.SpotifyApi = SpotifyApi;
-
+        this.isPaused = true;
         this.cachedQueueTracks = null;
         this.cachedCurrentTrack = null;
         this.cachedCurrentTrackUri = null;
 
         PubSub.subscribe("player.time", function (data, old_data) {
+            that.isPaused = data.isPaused;
             if (!that.cachedCurrentTrack) { that.getCurrentTrack(true); return }
             if (that.cachedCurrentTrack.uri != data.uri) {
                 that.getCurrentTrack(true); return
@@ -546,6 +547,17 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
 
         this.changedQueue = function () {
             PubSub.publish('PlayerApi.queue', this.cachedQueueTracks);
+        };
+
+        this.swap = function (source, dest) {
+            return $.ajax({
+                url: "/queue/swap/",
+                type: "post",
+                data: {
+                    source: source,
+                    dest: dest
+                }
+            });
         };
 
         this.getCurrentTrack = function (refreshCache) {
@@ -567,6 +579,7 @@ PlayerApp.factory('PlayerApi', ['PubSub', function (PubSub) {
                         deferred.reject();
                     } else {
                         this.cachedCurrentTrackUri = data.uri;
+                        this.isPaused = data.isPaused;
                         SpotifyApi.getTracks([SpotifyApi.uriToId(data.uri)]).then(function (tracks) {
                             this.cachedCurrentTrack = tracks[0];
                             this.cachedCurrentTrack.timePlayed = 0;
@@ -724,17 +737,17 @@ PlayerApp.factory('SocketApi', ['PubSub', 'PlayerApi', function (PubSub, PlayerA
         PubSub.publish('player.time', data);
     });
 
+    socket.on('queue.swap', function(){ PlayerApi.getQueueTracks(true) });
     socket.on('queue.replaced', function(){ PlayerApi.getQueueTracks(true) });
     socket.on('queue.removed', function(){ PlayerApi.getQueueTracks(true) });
     socket.on('queue.added', function(){ PlayerApi.getQueueTracks(true) });
+
     socket.on('player.pause', function(){
-        //that.$pauseBtn.hide();
-        //that.$playBtn.show();
+        PlayerApi.isPaused = true;
     });
 
     socket.on('player.resume', function(){
-        //that.$playBtn.hide();
-        //that.$pauseBtn.show();
+        PlayerApi.isPaused = false;
     });
     return socket;
 }]);

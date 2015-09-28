@@ -471,6 +471,15 @@ body {
   -o-transition: -o-transform 0.5s 0.7s, background-image 0.5s 0.7s;
   transition: -webkit-transform 0.5s 0.7s,-moz-transform 0.5s 0.7s,-o-transform 0.5s 0.7s,transform 0.5s 0.7s, background-image 0.5s 0.7s;
 }
+.as-sortable-dragging {
+  background: #262f39;
+  color: #e8dfdf;
+  box-shadow: 0px 0px 6px 0px #000;
+}
+.as-sortable-dragging p {
+  margin: 0;
+  padding: 0 10px;
+}
 .as-sortable-dragging a.remove-track {
   display: none;
 }
